@@ -5,7 +5,7 @@ import java.util.List;
 public class tic_tac_toe {
     public int maxply = 10;
 
-    public point minmax(point st, int[][] board, boolean max, int ply, int player){
+    public Piece minmax(Piece st, int[][] board, boolean max, int ply, int player){
         int[][] method_board = new int[board.length][board[0].length];
         for (int i = 0; i < board.length; i++) {
             System.arraycopy(board[i], 0, method_board[i], 0, board[i].length);
@@ -31,10 +31,10 @@ public class tic_tac_toe {
             for (Object element: availableMoves) {
                 if(!(st.alpha < st.beta))
                     break;
-                point move = (point)element;
+                Piece move = (Piece)element;
                 move.alpha = st.alpha;
                 move.beta = st.beta;
-                point child = minmax(move,method_board,false,n,1);
+                Piece child = minmax(move,method_board,false,n,1);
                 childs.add(child);
                 if (child.alpha > st.alpha)
                     st.alpha = child.alpha;
@@ -43,7 +43,7 @@ public class tic_tac_toe {
 //                return st;
             System.out.println("max");
             childs.sort(Collections.reverseOrder());
-            return (point) childs.get(0);
+            return (Piece) childs.get(0);
         }
         // when max is false, it is then a minimizer
         else {
@@ -59,10 +59,10 @@ public class tic_tac_toe {
             for (Object element: availableMoves) {
                 if(!(st.alpha < st.beta))
                     break;
-                point move = (point)element;
+                Piece move = (Piece)element;
                 move.alpha = st.alpha;
                 move.beta = st.beta;
-                point child = minmax(move,method_board,true,n,2);
+                Piece child = minmax(move,method_board,true,n,2);
                 childs.add(child);
                 if (child.beta < st.beta)
                     st.beta = child.beta;
@@ -70,7 +70,7 @@ public class tic_tac_toe {
             System.out.println("min");
             System.out.println(childs);
             childs.sort(Collections.reverseOrder());
-            return (point) childs.get(childs.size()-1);
+            return (Piece) childs.get(childs.size()-1);
         }
 
 
@@ -79,7 +79,7 @@ public class tic_tac_toe {
     }
 
 
-    public void make_move(int[][] board, point st, int player){
+    public void make_move(int[][] board, Piece st, int player){
        board[st.x][st.y] = player;
     }
 
@@ -90,7 +90,7 @@ public class tic_tac_toe {
             for (int j = 0; j < 3; j++) {
 
                 if (board[i][j] == 0){
-                    point move = new point(i,j);
+                    Piece move = new Piece(i,j);
                     move.h = h_value(move);
                     moves.add(move);
                 }
@@ -174,7 +174,7 @@ public class tic_tac_toe {
         return 0;
     }
 
-    public int h_value(point p){
+    public int h_value(Piece p){
         if ((p.x == 0 && p.y == 0) || (p.x == 0 && p.y == 2) || (p.x == 2 && p.y == 0) || (p.x == 2 && p.y == 2)){
             return 3;
         }
