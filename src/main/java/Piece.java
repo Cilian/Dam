@@ -4,6 +4,7 @@ import java.util.Comparator;
 public class Piece {
     private int x;
     private int y;
+    private boolean king;
 
 //    public int h;
 //    public int alpha;
@@ -13,11 +14,37 @@ public class Piece {
     public Piece(int x, int y){
         this.x=x;
         this.y=y;
+        this.king = false;
     }
 
     public Piece(){
-
     }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public boolean isKing() {
+        return king;
+    }
+
+    public void setKing(boolean king) {
+        this.king = king;
+    }
+
+
 //    public int getH(){
 //        return h;
 //    }
