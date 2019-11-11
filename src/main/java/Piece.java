@@ -5,16 +5,18 @@ public class Piece {
     private int x;
     private int y;
     private boolean king;
+    private int owner;
 
 //    public int h;
 //    public int alpha;
 //    public int beta;
 //    public int board_sum;
 
-    public Piece(int x, int y){
+    public Piece(int x, int y, int owner){
         this.x=x;
         this.y=y;
         this.king = false;
+        this.owner = owner;
     }
 
     public Piece(){
@@ -42,6 +44,14 @@ public class Piece {
 
     public void setKing(boolean king) {
         this.king = king;
+    }
+
+    public int getOwner(){
+        return owner;
+    }
+
+    public void setOwner(){
+        this.owner = owner;
     }
 
 
