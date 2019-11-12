@@ -1,3 +1,5 @@
+package checker.old;
+
 public class Move {
     private int value;
     private Piece move_piece;

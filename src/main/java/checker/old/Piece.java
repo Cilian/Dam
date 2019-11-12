@@ -1,3 +1,5 @@
+package checker.old;
+
 import java.util.Comparator;
 
 // public class Piece implements Comparable {
