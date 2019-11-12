@@ -10,11 +10,11 @@ public class CheckersOp {
 	// 5 - Rogue Piece
 
 	private int[][] board;
-	private int rCount;
-	private int bCount;
-	private int turnCount; //Just a counter -- NOT whose turn it is
-	private int turn; //Bizzarely, 0 is black, and 1 is red
-	private int currJumper;
+	public int rCount;
+	public int bCount;
+	public int turnCount; //Just a counter -- NOT whose turn it is
+	public int turn; //Bizzarely, 0 is black, and 1 is red
+	public int currJumper;
 
 	public void resetBoard()
 	{

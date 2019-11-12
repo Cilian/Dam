@@ -4,11 +4,11 @@ import checker.CheckersOp;
 
 public class CheckersAITree
 {
-	private CheckersAINode root;
+	private Inspire root;
 	
 	public CheckersAITree(CheckersOp inputBoard)
 	{	
-		root = new CheckersAINode(inputBoard, null, 0);
+		root = new Inspire(inputBoard, null, 0);
 	}
 	
 	public void buildTree()
