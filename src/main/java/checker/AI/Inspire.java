@@ -4,7 +4,6 @@ import checker.CheckersOp;
 import checker.JumpTree;
 import java.util.ArrayList;
 
-import java.util.ArrayList;
 
 public class Inspire {
     private CheckersOp board; //The current board position

@@ -90,6 +90,9 @@ public class CheckersOp {
 	}
 	
 	public int makeMove(int from, int to){
+		// example of this is 25 / 10 = 2.5 but since it is int is floored to 2
+		// example of this is 25 % 10 removes all multiples of 10,
+		// so it basicly removes 10 and keeps doing it as long as the remainder is higher than 10
 		int fromY = from / 10;
 		int fromX = from % 10;
 		int toY = to / 10;
@@ -167,7 +170,7 @@ public class CheckersOp {
 		int x=piece%10;
 		int pieceType=board[y][x];
 		if(pieceType==0)
-			return false; 
+			return false;
 		if(checkValidMove(piece, piece+22)!=0||
 				checkValidMove(piece, piece+18)!=0||
 				checkValidMove(piece, piece-22)!=0||
@@ -186,7 +189,8 @@ public class CheckersOp {
 		int fromX = from % 10;
 		int toY = to / 10;
 		int toX = to % 10;
-		
+
+		// checks if it is outside the board
 		if(fromY>7||fromY<0||toX>7||toX<0||fromX>7||fromX<0||toY>7||toY<0)
 			return 0;
 		int fromPieceType = board[fromY][fromX];
@@ -199,8 +203,12 @@ public class CheckersOp {
 		//make sure it is in a valid spot
 		if(fromPieceType == 1 && Math.abs(toX - fromX) == 1 && toY - fromY == 1) return 1;
 		if(fromPieceType == 2 && Math.abs(toX - fromX) == 1 && toY - fromY == -1) return 1;
+		// is a jump move? |
+		//                 V
 		if(fromPieceType == 1 && Math.abs(toX - fromX) == 2 && toY - fromY == 2){
 			int x = (toX - fromX)/2;
+			// if statement checks if it is an opponents piece that is jumped over and returns 2 (jump move) if true
+			// or 0 (invalid move) if false
 			if(board[fromY + 1][fromX  + x]==2||board[fromY + 1][fromX  + x]==4) return 2;
 		return 0;
 		}
@@ -331,6 +339,10 @@ public class CheckersOp {
 	
 	public int evaluateBoard()
 	{
+		// THIS IS THE HEURISTIC FOR THE AI!!!!!!!!!!!!!!!!!!!!!!!!!!
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 		//We need to encourage the AI to make sacrifices in the endgame if necessary
 		//Using a divide-by function might improve that.
 		//Or! If the computer is at 0 pieces, the board should evaluate to Integer.MIN_VALUE
