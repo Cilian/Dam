@@ -19,7 +19,7 @@ public class Inspire {
     private int currHeight;
 
     //So if we're at a minimizer (player) node, every following node will update
-
+    // need to make our own of this
     public Inspire(CheckersOp inputBoard, String moveSequence, int inputCurrHeight)
     {
         board = new CheckersOp(inputBoard);
@@ -61,6 +61,7 @@ public class Inspire {
         return moves;
     }
 
+    // need to make our own of this
     public void buildTree(int currHeight)
     {
         //Now we build the subtree; this is a recursive function
@@ -263,6 +264,7 @@ public class Inspire {
                 CheckersOp tempBoard = new CheckersOp(board); //Does this work? Will my changes in tempBoard affect board?
                 tempBoard.makeMove(10*row+col,10*(row-1)+col-1);
                 String lastMove=(10*row+col) + "," + (10*(row-1)+col-1);
+                // replace with new method we create (P.S)
                 boolean alphaBetaConsistent = updateAlphaBeta(new Inspire(tempBoard, lastMove, currHeight+1));
                 if(!alphaBetaConsistent)
                     return false;
@@ -279,6 +281,7 @@ public class Inspire {
                 CheckersOp tempBoard = new CheckersOp(board); //QUESTION: will my changes to tempBoard affect board?
                 tempBoard.makeMove(10*row+col,10*(row-1)+col+1);
                 String lastMove=(10*row+col) + "," + (10*(row-1)+col-1);
+                // replace (updateAlphaBeta) with new method we create (P.S)
                 boolean alphaBetaConsistent = updateAlphaBeta(new Inspire(tempBoard, lastMove, currHeight+1));
                 if(!alphaBetaConsistent)
                     return false;
@@ -297,6 +300,7 @@ public class Inspire {
                 CheckersOp tempBoard = new CheckersOp(board); //Does this work? Will my changes in tempBoard affect board?
                 tempBoard.makeMove(10*row+col,10*(row+1)+col-1);
                 String lastMove=(10*row+col) + "," + (10*(row+1)+col-1);
+                // replace (updateAlphaBeta) with new method we create (P.S)
                 boolean alphaBetaConsistent = updateAlphaBeta(new Inspire(tempBoard, lastMove, currHeight+1));
                 if(!alphaBetaConsistent)
                     return false;
@@ -315,6 +319,7 @@ public class Inspire {
                 CheckersOp tempBoard = new CheckersOp(board); //QUESTION: will my changes to tempBoard affect board?
                 tempBoard.makeMove(10*row+col,10*(row+1)+col+1);
                 String lastMove=(10*row+col) + "," + (10*(row+1)+col+1);
+                // replace (updateAlphaBeta) with new method we create (P.S)
                 boolean alphaBetaConsistent = updateAlphaBeta(new Inspire(tempBoard, lastMove, currHeight+1));
                 if(!alphaBetaConsistent)
                     return false;
@@ -330,6 +335,7 @@ public class Inspire {
                 CheckersOp tempBoard = new CheckersOp(board); //Does this work? Will my changes in tempBoard affect board?
                 tempBoard.makeMove(10*row+col,10*(row-1)+col-1);
                 String lastMove=(10*row+col) + "," + (10*(row-1)+col-1);
+                // replace (updateAlphaBeta) with new method we create (P.S)
                 boolean alphaBetaConsistent = updateAlphaBeta(new Inspire(tempBoard, lastMove, currHeight+1));
                 if(!alphaBetaConsistent)
                     return false;
@@ -345,6 +351,7 @@ public class Inspire {
                 CheckersOp tempBoard = new CheckersOp(board); //QUESTION: will my changes to tempBoard affect board?
                 tempBoard.makeMove(10*row+col,10*(row-1)+col+1);
                 String lastMove=(10*row+col) + "," + (10*(row-1)+col+1);
+                // replace (updateAlphaBeta) with new method we create (P.S)
                 boolean alphaBetaConsistent = updateAlphaBeta(new Inspire(tempBoard, lastMove, currHeight+1));
                 if(!alphaBetaConsistent)
                     return false;
@@ -359,7 +366,7 @@ public class Inspire {
         }
         return false;
     }
-
+    // can be used with small modification (see comment inside P.S)
     private boolean addJumperChildren(int startIndex, int changeInY, int changeInX)
     {
         //Note: only create a jump chain when one jump has already been executed (the changeInY and changeInX)
@@ -378,6 +385,7 @@ public class Inspire {
             {
                 tempBoard.makeMove(Integer.parseInt(theChain[i]), Integer.parseInt(theChain[i+1]));
             }
+            // needs to be changed to a new AI method we make (P.S)
             boolean alphaBetaConsistent = updateAlphaBeta(new Inspire(tempBoard, oneChainz, currHeight+1));
             if(alphaBetaConsistent==false)
                 return false;
@@ -385,6 +393,7 @@ public class Inspire {
         return true;
     }
 
+    // we need to write our own version of this
     private boolean updateAlphaBeta(Inspire kid) //returns false if alpha>beta; that's when you're done exploring children
     {
         //Computer turn: 1, human turn: 0
