@@ -15,11 +15,12 @@ public class CheckersAINode
 	//That is, alpha is the minimum (worst) value that the maximizer (the computer AI) is assured at that node
 	// public int beta; //Beta is the minimum upper bound of possible solutions
 	// public int maxply = 10;
-	public ArrayList<CheckersMove> moveList;
-	public boolean isLeaf;
+	// public ArrayList<CheckersMove> moveList;
+	// public boolean isLeaf;
 	public int currHeight;
 	public CheckersOp board;
 	public String bestMovePrevIteration;
+	public String firstSearchMv;
 	public String bestNextMove;
 	public String moves;
 
@@ -49,12 +50,10 @@ public class CheckersAINode
 //			isLeaf = false;
 	}
 	// REMEMBER TO HAVE THE FIRST CALL WITH ALPHA=INTEGER_MIN AND BETA=INTEGER_MAX
-	public int minmax(CheckersOp board, boolean max, int currHeight, int alpha, int beta ){
-
+	public int minmax(CheckersOp board, boolean max, int currHeight, String prevItMv , int alpha, int beta ){
+		boolean isLeaf = false;
+		ArrayList<CheckersMove> moveList = null;
 		CheckersMove mv = new CheckersMove();
-		CheckersOp tempb = new CheckersOp(board);
-		// make move on tempb
-		// mv.moves = move;
 
 		if(board.rCount<=1||board.bCount<=1) //This is where you change the depth! And it automatically searches one deeper near the end-game
 		{
@@ -77,8 +76,20 @@ public class CheckersAINode
 
 		if(max){
 			while (alpha < beta){
+				CheckersOp tempb = new CheckersOp(board);
+				// call moveGenerate
+				if(prevItMv != null){
+					firstSearchMv = prevItMv;
+				}
+				else{
+					moveList = moveGen(max, tempb);
+					// might want to remove the firstSearchMv and then add it at the start of the list such that we start our search from there
+					firstSearchMv = moveList.get(0).moves;
+				}
+				// make move on tempb
+				// mv.moves = move;
 
-				int v = minmax(tempb, false, currHeight + 1, alpha, beta);
+				int v = minmax(tempb, false, currHeight + 1, null, alpha, beta);
 				if (v > alpha){
 					alpha = v;
 					mv.val = v;
@@ -89,8 +100,18 @@ public class CheckersAINode
 		}
 		else
 			while (alpha < beta){
-
-				int v =  minmax(tempb, true, currHeight + 1, alpha, beta);
+				CheckersOp tempb = new CheckersOp(board);
+				if(prevItMv != null){
+					firstSearchMv = prevItMv;
+				}
+				else{
+					moveList = moveGen(max, tempb);
+					// might want to remove the firstSearchMv and then add it at the start of the list such that we start our search from there
+					firstSearchMv = moveList.get(0).moves;
+				}
+				// make move on tempb
+				// mv.moves = move;
+				int v =  minmax(tempb, true, currHeight + 1, null, alpha, beta);
 				if (v < beta){
 					beta = v;
 					mv.val = v;
@@ -102,13 +123,26 @@ public class CheckersAINode
 
 	public void buildTree(int currheight){
 
+		// run minmax iteratively
+		// firts run with max depth of 1 than with 2 ..
+		// have it in a while loop maybe where we can break, if we are reaching the time limit (15 sec)
+		// can be something like this...
+		// int i = 0;
+		// bestMovePrevIteration = null; // might want to set this at the top
+		// alpha = Integer.Min_value
+		// beta = Integer.Max_value
+		// while(TimeIsLeft){
+		// minmax(board, max, i, bestMovePrevIteration, alpha, beta);
+		// bestMovePrevIteration = bestNextMove;}
+		// remember to break loop before we run out of time
+
+
 	}
 
-	public ArrayList<String> moveGen(boolean max, int row, int col, CheckersOp board){
-		// row = y
-		// col = x
-		ArrayList<String> Moves = new ArrayList<String>();
-		// Generate some moves based on the col,row position and the board
+	public ArrayList<CheckersMove> moveGen(boolean max, CheckersOp board){
+		ArrayList<CheckersMove> Moves = new ArrayList<CheckersMove>();
+		// who the player is can be based on the max bool
+		// Generate some moves based on the player and the board
 		return Moves;
 		//Moves are in StartYStartX,NextYNextX format
 		// example of this is move from StartY = 2 and StartX = 2 to NextY = 3 and NextX = 3 is written 22,33
