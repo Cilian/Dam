@@ -371,7 +371,9 @@ public class CheckersOp {
 				{12, 0, 8, 0, 8, 0, 10, 0},
 				{0, 10, 0, 10, 0, 10, 0, 12},
 				{12, 0, 12, 0, 12, 0, 12, 0}};
-		
+
+
+		// note: Dette skal vi selv lave
 		for(int y = 0;y < 8; y++){
 			for(int x = 0; x < 8; x++){
 				int pieceType = board[x][y];

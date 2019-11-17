@@ -29,18 +29,21 @@ public class Inspire {
         alpha = Integer.MIN_VALUE;
         beta = Integer.MAX_VALUE;
         currHeight = inputCurrHeight;
+
+        //        Note: Skal nok ikke laves som det første
         //Here is where you change the depth!!
-        if(board.rCount<=1||board.bCount<=1) //This is where you change the depth! And it automatically searches one deeper near the end-game
+/*        if(board.rCount<=1||board.bCount<=1) //This is where you change the depth! And it automatically searches one deeper near the end-game
         {
             if(currHeight>=7)
                 isLeaf = true;
-        }
-        else if(board.rCount<=3||board.bCount<=3)
-        {
-            if(currHeight>=6)
-                isLeaf = true;
-        }
-        else if(currHeight>=5)
+        }*/
+
+//        else if(board.rCount<=3||board.bCount<=3)
+//        {
+//            if(currHeight>=6)
+//                isLeaf = true;
+//        }
+        if(currHeight>=5)
             isLeaf = true;
         else
             isLeaf = false;
@@ -385,7 +388,6 @@ public class Inspire {
             {
                 tempBoard.makeMove(Integer.parseInt(theChain[i]), Integer.parseInt(theChain[i+1]));
             }
-            // needs to be changed to a new AI method we make (P.S)
             boolean alphaBetaConsistent = updateAlphaBeta(new Inspire(tempBoard, oneChainz, currHeight+1));
             if(alphaBetaConsistent==false)
                 return false;
@@ -393,7 +395,7 @@ public class Inspire {
         return true;
     }
 
-    // we need to write our own version of this
+    // Note: we need to write our own version of this
     private boolean updateAlphaBeta(Inspire kid) //returns false if alpha>beta; that's when you're done exploring children
     {
         //Computer turn: 1, human turn: 0

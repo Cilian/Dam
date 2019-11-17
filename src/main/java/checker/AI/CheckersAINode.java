@@ -4,6 +4,7 @@ package checker.AI;
 import checker.CheckersMove;
 import checker.CheckersOp;
 import checker.old.Checker;
+import checker.old.Piece;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,6 +140,7 @@ public class CheckersAINode
 
 	}
 
+
 	public ArrayList<CheckersMove> moveGen(boolean max, CheckersOp board){
 		ArrayList<CheckersMove> Moves = new ArrayList<CheckersMove>();
 		// who the player is can be based on the max bool
@@ -148,5 +150,6 @@ public class CheckersAINode
 		// example of this is move from StartY = 2 and StartX = 2 to NextY = 3 and NextX = 3 is written 22,33
 		// if there are jumps then the next position is just put after fx. 22,44,66
 	}
+
 
 }
