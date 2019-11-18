@@ -397,7 +397,7 @@ public class Inspire {
     }
 
     // Note: we need to write our own version of this
-    //returns false if alpha>beta;
+    //returns false if alpha>beta and then stores the data into the bestMove
 
 
     public boolean updateAlphaBeta(Inspire child){
@@ -405,7 +405,7 @@ public class Inspire {
         ArrayList<CheckersMove> moveList = null;
         CheckersMove mv = new CheckersMove();
 
-        bestMove = child.moves;
+
         int Maximize = board.turn;
 
         if(Maximize == 1){ //If it is the computers turn, then we need to maximize
