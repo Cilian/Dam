@@ -1,5 +1,6 @@
 package checker.AI;
 
+import checker.CheckersMove;
 import checker.CheckersOp;
 import checker.JumpTree;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ public class Inspire {
     boolean isLeaf; //Stores if this node is a leaf (changes the value function)
     private double value;
     private String moves;
-    public String bestNextMove;
+    public String bestMove;
     public int alpha; //Alpha is the maximum lower bound of possible solutions
     //That is, alpha is the minimum (worst) value that the maximizer (the computer AI) is assured at that node
     public int beta; //Beta is the minimum upper bound of possible solutions
@@ -25,7 +26,7 @@ public class Inspire {
         board = new CheckersOp(inputBoard);
         children = new ArrayList<CheckersAINode>();
         moves = moveSequence;
-        bestNextMove = null;
+        bestMove = null;
         alpha = Integer.MIN_VALUE;
         beta = Integer.MAX_VALUE;
         currHeight = inputCurrHeight;
@@ -396,34 +397,64 @@ public class Inspire {
     }
 
     // Note: we need to write our own version of this
-    private boolean updateAlphaBeta(Inspire kid) //returns false if alpha>beta; that's when you're done exploring children
-    {
-        //Computer turn: 1, human turn: 0
-        if(board.turn==1) //This is the computer, so trying to maximize
-        {
-            kid.buildTree(currHeight+1);
-            if(kid.beta>=alpha) //If the minimizer's next perfect play guarantees the minimizer only something >= than the current best
-            //We have to make this an equals sign so the computer doesn't just give up when it's about to lose . . .
-            //Then this node's new alpha is that.
-            //You'll have to beat the computer to test this!
-            {
-                bestNextMove = kid.moves;
-                alpha = kid.beta;
-                if(alpha>beta)
-                    return false;
+    //returns false if alpha>beta;
+
+
+    public boolean updateAlphaBeta(Inspire child){
+        boolean isLeaf = false;
+        ArrayList<CheckersMove> moveList = null;
+        CheckersMove mv = new CheckersMove();
+
+        bestMove = child.moves;
+        int Maximize = board.turn;
+
+        if(Maximize == 1){ //If it is the computers turn, then we need to maximize
+            if (alpha < beta){
+                CheckersOp tempb = new CheckersOp(board);
+                // call moveGenerate
+                if(prevItMv != null){
+                    firstSearchMv = prevItMv;
+                }
+                else{
+                    moveList = moveGen(max, tempb);
+                    // might want to remove the firstSearchMv and then add it at the start of the list such that we start our search from there
+                    firstSearchMv = moveList.get(0).moves;
+                }
+                // make move on tempb
+                // mv.moves = move;
+
+                int v = minmax(tempb, false, currHeight + 1, null, alpha, beta);
+                if (v > alpha){
+                    alpha = v;
+                    mv.val = v;
+                    bestNextMove = mv.moves;
+                }
             }
+            return alpha;
         }
-        else //This is the person's turn, so trying to minimize
-        {
-            kid.buildTree(currHeight+1);
-            if(kid.alpha<=beta)
-            {
-                bestNextMove = kid.moves;
-                beta = kid.alpha;
-                if(alpha>beta)
-                    return false;
+        else
+            while (alpha < beta){
+                CheckersOp tempb = new CheckersOp(board);
+                if(prevItMv != null){
+                    firstSearchMv = prevItMv;
+                }
+                else{
+                    moveList = moveGen(max, tempb);
+                    // might want to remove the firstSearchMv and then add it at the start of the list such that we start our search from there
+                    firstSearchMv = moveList.get(0).moves;
+                }
+                // make move on tempb
+                // mv.moves = move;
+                int v =  minmax(tempb, true, currHeight + 1, null, alpha, beta);
+                if (v < beta){
+                    beta = v;
+                    mv.val = v;
+                    bestNextMove = mv.moves;
+                }
             }
-        }
-        return true;
+        return beta;
     }
+
+
+
 }

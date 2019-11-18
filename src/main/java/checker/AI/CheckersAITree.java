@@ -20,7 +20,7 @@ public class CheckersAITree
 	{
 		System.out.println("The AI is thinking . . .");
 		root.buildTree(0);
-		System.out.println(root.bestNextMove);
-		return root.bestNextMove;
+		System.out.println(root.bestMove);
+		return root.bestMove;
 	}
 }
