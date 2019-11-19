@@ -13,7 +13,7 @@ public class CheckersAITree
 	
 	public void buildTree()
 	{
-		root.buildTree(0);
+		root.buildTree(5);
 	}
 	
 	public String findBestMove() //Returns the sequence of best moves

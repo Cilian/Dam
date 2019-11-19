@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class Inspire {
     private CheckersOp board; //The current board position
-    public ArrayList<CheckersAINode> children; //The next possible boards
+    public ArrayList<Inspire> children; //The next possible boards
     boolean isLeaf; //Stores if this node is a leaf (changes the value function)
     private double value;
     private String moves;
@@ -24,7 +24,7 @@ public class Inspire {
     public Inspire(CheckersOp inputBoard, String moveSequence, int inputCurrHeight)
     {
         board = new CheckersOp(inputBoard);
-        children = new ArrayList<CheckersAINode>();
+        children = new ArrayList<Inspire>();
         moves = moveSequence;
         bestMove = null;
         alpha = Integer.MIN_VALUE;
@@ -55,7 +55,7 @@ public class Inspire {
         return board;
     }
 
-    public ArrayList<CheckersAINode> getChildren()
+    public ArrayList<Inspire> getChildren()
     {
         return children;
     }
@@ -290,11 +290,7 @@ public class Inspire {
                 if(!alphaBetaConsistent)
                     return false;
             }
-            else if(board.checkValidMove(10*row+col,10*(row-2)+col+2)==2) //Jumping up-right
-            {
-                boolean alphaBetaConsistent = addJumperChildren(index,-2,2);
-                if(!alphaBetaConsistent)
-                    return false;			}
+
         }
 
         else if(board.getBoard()[row][col]==4) //This means we found a red king!
@@ -309,14 +305,6 @@ public class Inspire {
                 if(!alphaBetaConsistent)
                     return false;
             }
-            else if(board.checkValidMove(10*row+col,10*(row+2)+col-2)==2) //Jumping down left
-            {
-                //Now we have to work out jump chains: just use a while loop to keep checking for chains (and/or DFS))
-                //Once we've reached the end of a chain, we stop and add it to children
-                boolean alphaBetaConsistent = addJumperChildren(index,2,-2);
-                if(!alphaBetaConsistent)
-                    return false;
-            }
 
             if(board.checkValidMove(10*row+col,10*(row+1)+col+1)==1) //moving down-right
             {
@@ -328,11 +316,6 @@ public class Inspire {
                 if(!alphaBetaConsistent)
                     return false;
             }
-            else if(board.checkValidMove(10*row+col,10*(row+2)+col+2)==2) //Jumping down-right
-            {
-                boolean alphaBetaConsistent = addJumperChildren(index,2,2);
-                if(!alphaBetaConsistent)
-                    return false;			}
 
             if(board.checkValidMove(10*row+col,10*(row-1)+col-1)==1) //Moving up-left
             {
@@ -400,60 +383,37 @@ public class Inspire {
     //returns false if alpha>beta and then stores the data into the bestMove
 
 
-    public boolean updateAlphaBeta(Inspire child){
-        boolean isLeaf = false;
-        ArrayList<CheckersMove> moveList = null;
-        CheckersMove mv = new CheckersMove();
+       private boolean updateAlphaBeta(Inspire kid)  //that's when you're done exploring children
+   {
+       //Computer turn: 1, human turn: 0
+       if(board.turn==1) //This is the computer, so trying to maximize
+       {
+           kid.buildTree(currHeight+1);
+           if(kid.beta>=alpha) //If the minimizer's next perfect play guarantees the minimizer only something >= than the current best
+           //We have to make this an equals sign so the computer doesn't just give up when it's about to lose . . .
+           //Then this node's new alpha is that.
+           //You'll have to beat the computer to test this!
+           {
+               bestMove = kid.moves;
+               alpha = kid.beta;
+               if(alpha>beta)
+                   return false;
+           }
+       }
+       else //This is the person's turn, so trying to minimize
+       {
+           kid.buildTree(currHeight+1);
+           if(kid.alpha<=beta)
+           {
+               bestMove = kid.moves;
+               beta = kid.alpha;
+               if(alpha>beta)
+                   return false;
+           }
+       }
+       return true;
+   }
 
-
-        int Maximize = board.turn;
-
-        if(Maximize == 1){ //If it is the computers turn, then we need to maximize
-            if (alpha < beta){
-                CheckersOp tempb = new CheckersOp(board);
-                // call moveGenerate
-                if(prevItMv != null){
-                    firstSearchMv = prevItMv;
-                }
-                else{
-                    moveList = moveGen(max, tempb);
-                    // might want to remove the firstSearchMv and then add it at the start of the list such that we start our search from there
-                    firstSearchMv = moveList.get(0).moves;
-                }
-                // make move on tempb
-                // mv.moves = move;
-
-                int v = minmax(tempb, false, currHeight + 1, null, alpha, beta);
-                if (v > alpha){
-                    alpha = v;
-                    mv.val = v;
-                    bestNextMove = mv.moves;
-                }
-            }
-            return alpha;
-        }
-        else
-            while (alpha < beta){
-                CheckersOp tempb = new CheckersOp(board);
-                if(prevItMv != null){
-                    firstSearchMv = prevItMv;
-                }
-                else{
-                    moveList = moveGen(max, tempb);
-                    // might want to remove the firstSearchMv and then add it at the start of the list such that we start our search from there
-                    firstSearchMv = moveList.get(0).moves;
-                }
-                // make move on tempb
-                // mv.moves = move;
-                int v =  minmax(tempb, true, currHeight + 1, null, alpha, beta);
-                if (v < beta){
-                    beta = v;
-                    mv.val = v;
-                    bestNextMove = mv.moves;
-                }
-            }
-        return beta;
-    }
 
 
 
