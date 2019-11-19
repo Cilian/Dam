@@ -146,6 +146,7 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 					long startMillis = System.currentTimeMillis();
 					CheckersAITree thinker = new CheckersAITree(data); //CheckersAITree will clone it for us
 					String bestMoves = thinker.findBestMove(); //We ask our AI Tree what the best move is
+                    System.out.println(bestMoves);
 					String[] arrMoves = bestMoves.split(","); //Divides up the string of moves by comma
 					System.out.println("The AI moved: " + bestMoves);
 					for(int i=0; i<arrMoves.length-1; i++)

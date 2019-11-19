@@ -108,6 +108,7 @@ public class CheckersAINode
 
 				int v = minmax(tempb, false, currHeight + 1, null, alpha, beta);
 				if (v > alpha) {
+					System.out.println("hej");
 					alpha = v;
 					// mv.val = v;
 					bestNextMove = moveList.get(i);
@@ -130,6 +131,7 @@ public class CheckersAINode
 				}
 				int v = minmax(tempb, true, currHeight + 1, null, alpha, beta);
 				if (v < beta) {
+					System.out.println("hej");
 					beta = v;
 					// mv.val = v;
 					bestNextMove = moveList.get(i);
@@ -167,8 +169,8 @@ public class CheckersAINode
 		if (max) { // if Computer's turn we maximize
 			// i = y = row
 			// j = x = col
-			for (int i = 0; i > 8; i++){
-				for (int j = 0; j > 8; j++){
+			for (int i = 0; i < 8; i++){
+				for (int j = 0; j < 8; j++){
 					if (board.getBoard()[i][j] % 2 == 1){
 						addValidSquareJumpMovesForRed(i,j,"", board);
 						addValidSquareMovesForRed(i,j, board);
@@ -179,8 +181,8 @@ public class CheckersAINode
 			genMoves.clear();
 		}
 		else { //if player's turn we minimize
-			for (int i = 0; i > 8; i++){
-				for (int j = 0; j > 8; j++){
+			for (int i = 0; i < 8; i++){
+				for (int j = 0; j < 8; j++){
 					if (board.getBoard()[i][j] % 2 == 0){
 						addValidSquareJumpMovesForBlack(i,j,"", board);
 						addValidSquareMovesForBlack(i,j, board);
@@ -268,7 +270,7 @@ public class CheckersAINode
 				int to = (10*(row+2)+col-2);
 				int from = row*10 + col;
 				tempBoard.makeMove(from, to);
-				addValidSquareJumpMovesForRed(10*(row+2), col-2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row+2), col-2, temp, tempBoard);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row+2)+col+2)==2) //Jumping down-right
@@ -277,7 +279,7 @@ public class CheckersAINode
 				int to = (10*(row+2)+col+2);
 				int from = row*10 + col;
 				tempBoard.makeMove(from, to);
-				addValidSquareJumpMovesForRed(10*(row+2), col+2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row+2), col+2, temp, tempBoard);
 			}
 		}
 		else if(tboard.getBoard()[row][col]==3) //This means we found a red king!
@@ -297,7 +299,7 @@ public class CheckersAINode
 				int to = (10*(row+2)+col-2);
 				int from = row*10 + col;
 				tempBoard.makeMove(from, to);
-				addValidSquareJumpMovesForRed(10*(row+2), col-2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row+2), col-2, temp, tempBoard);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row+2)+col+2)==2) //Jumping down-right
@@ -306,7 +308,7 @@ public class CheckersAINode
 				int to = (10*(row+2)+col+2);
 				int from = row*10 + col;
 				tempBoard.makeMove(from, to);
-				addValidSquareJumpMovesForRed(10*(row+2), col+2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row+2), col+2, temp, tempBoard);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row-2)+col-2)==2) //Jumping up-left
@@ -315,7 +317,7 @@ public class CheckersAINode
 				int to = (10*(row-2)+col-2);
 				int from = row*10 + col;
 				tempBoard.makeMove(from, to);
-				addValidSquareJumpMovesForRed(10*(row-2), col-2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row-2), col-2, temp, tempBoard);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row-2)+col+2)==2) //Jumping up-right
@@ -324,7 +326,7 @@ public class CheckersAINode
 				int to = (10*(row-2)+col+2);
 				int from = row*10 + col;
 				tempBoard.makeMove(from, to);
-				addValidSquareJumpMovesForRed(10*(row-2), col+2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row-2), col+2, temp, tempBoard);
 			}
 		}
 	}
@@ -401,7 +403,7 @@ public class CheckersAINode
 				int to = (10*(row-2)+col-2);
 				int from = row*10 + col;
 				tempBoard.makeMove(from, to);
-				addValidSquareJumpMovesForRed(10*(row-2), col-2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row-2), col-2, temp, tempBoard);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row-2)+col+2)==2) //Jumping down-right
@@ -410,7 +412,7 @@ public class CheckersAINode
 				int to = (10*(row-2)+col+2);
 				int from = row*10 + col;
 				tempBoard.makeMove(from, to);
-				addValidSquareJumpMovesForRed(10*(row-2), col+2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row-2), col+2, temp, tempBoard);
 			}
 		}
 		else if(tboard.getBoard()[row][col]==4) //This means we found a black king!
@@ -430,7 +432,7 @@ public class CheckersAINode
 				int to = (10*(row+2)+col-2);
 				int from = row*10 + col;
 				tempBoard.makeMove(from, to);
-				addValidSquareJumpMovesForRed(10*(row+2), col-2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row+2), col-2, temp, tempBoard);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row+2)+col+2)==2) //Jumping down-right
@@ -439,7 +441,7 @@ public class CheckersAINode
 				int to = (10*(row+2)+col+2);
 				int from = row*10 + col;
 				tempBoard.makeMove(from, to);
-				addValidSquareJumpMovesForRed(10*(row+2), col+2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row+2), col+2, temp, tempBoard);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row-2)+col-2)==2) //Jumping up-left
@@ -448,7 +450,7 @@ public class CheckersAINode
 				int to = (10*(row-2)+col-2);
 				int from = row*10 + col;
 				tempBoard.makeMove(from, to);
-				addValidSquareJumpMovesForRed(10*(row-2), col-2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row-2), col-2, temp, tempBoard);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row-2)+col+2)==2) //Jumping up-right
@@ -457,7 +459,7 @@ public class CheckersAINode
 				int to = (10*(row-2)+col+2);
 				int from = row*10 + col;
 				tempBoard.makeMove(from, to);
-				addValidSquareJumpMovesForRed(10*(row-2), col+2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row-2), col+2, temp, tempBoard);
 			}
 		}
 	}
