@@ -52,6 +52,9 @@ public class CheckersAINode
 //			isLeaf = false;
 	}
 	// REMEMBER TO HAVE THE FIRST CALL WITH ALPHA=INTEGER_MIN AND BETA=INTEGER_MAX
+	// The AI makes illegal move avoids jump moves
+	// Maybe check all jump moves before, normal moves
+	// Maybe change the evaluation method since the evaluation results differ very slightly 
 	public int minmax(CheckersOp board, boolean max, int currHeight, String prevItMv , int alpha, int beta ){
 		boolean isLeaf = false;
 		ArrayList<String> moveList = new ArrayList<>();
@@ -108,8 +111,9 @@ public class CheckersAINode
 
 				int v = minmax(tempb, false, currHeight + 1, null, alpha, beta);
 				if (v > alpha) {
-					System.out.println("hej");
+					System.out.println("" + v);
 					alpha = v;
+					System.out.println(moveList.get(i));
 					// mv.val = v;
 					bestNextMove = moveList.get(i);
 				}
@@ -131,8 +135,9 @@ public class CheckersAINode
 				}
 				int v = minmax(tempb, true, currHeight + 1, null, alpha, beta);
 				if (v < beta) {
-					System.out.println("hej");
+					System.out.println(moveList.get(i));
 					beta = v;
+					System.out.println("" + v);
 					// mv.val = v;
 					bestNextMove = moveList.get(i);
 				}
