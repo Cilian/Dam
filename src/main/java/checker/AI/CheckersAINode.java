@@ -19,7 +19,7 @@ public class CheckersAINode
 	// public ArrayList<CheckersMove> moveList;
 	// public boolean isLeaf;
 	public ArrayList<String> genMoves = new ArrayList<>();
-	public int currHeight;
+	//public int currHeight;
 	public CheckersOp globalBoard;
 	public String bestMovePrevIteration;
 	public String firstSearchMv;
@@ -30,11 +30,11 @@ public class CheckersAINode
 	public CheckersAINode(CheckersOp inputBoard, String moveSequence, int inputCurrHeight){
 		globalBoard = new CheckersOp(inputBoard);
 
-		String moves = moveSequence;
+		//String moves = moveSequence;
 		bestNextMove = null;
 		// alpha = Integer.MIN_VALUE;
 		// beta = Integer.MAX_VALUE;
-		currHeight = inputCurrHeight;
+		//currHeight = inputCurrHeight;
 //		//Here is where you change the depth!!
 //		if(board.rCount<=1||board.bCount<=1) //This is where you change the depth! And it automatically searches one deeper near the end-game
 //		{
@@ -54,12 +54,13 @@ public class CheckersAINode
 	// REMEMBER TO HAVE THE FIRST CALL WITH ALPHA=INTEGER_MIN AND BETA=INTEGER_MAX
 	// The AI makes illegal move avoids jump moves
 	// Maybe check all jump moves before, normal moves
-	// Maybe change the evaluation method since the evaluation results differ very slightly 
+	// Maybe change the evaluation method since the evaluation results differ very slightly
 	public int minmax(CheckersOp board, boolean max, int currHeight, String prevItMv , int alpha, int beta ){
 		boolean isLeaf = false;
 		ArrayList<String> moveList = new ArrayList<>();
-		// CheckersMove mv = new CheckersMove();
 		CheckersOp tempb = new CheckersOp(board);
+
+		System.out.println("hej from height " + currHeight);
 
 		if(prevItMv != null){
 //			firstSearchMv = prevItMv;
@@ -75,24 +76,28 @@ public class CheckersAINode
 //			firstSearchMv = moveList.get(0);
 		}
 
-		if(board.rCount<=1||board.bCount<=1) //This is where you change the depth! And it automatically searches one deeper near the end-game
-		{
-			if(currHeight>=7)
-				isLeaf = true;
-		}
-		else if(board.rCount<=3||board.bCount<=3)
-		{
-			if(currHeight>=6)
-				isLeaf = true;
-		}
-		else if(currHeight>=5)
-			isLeaf = true;
-		else
-			isLeaf = false;
-
-		if(isLeaf){
+		if(currHeight == 7){
 			return tempb.evaluateBoard();
 		}
+
+//		if(board.rCount<=1||board.bCount<=1) //This is where you change the depth! And it automatically searches one deeper near the end-game
+//		{
+//			if(currHeight>=7)
+//				isLeaf = true;
+//		}
+//		else if(board.rCount<=3||board.bCount<=3)
+//		{
+//			if(currHeight>=6)
+//				isLeaf = true;
+//		}
+//		else if(currHeight>=5)
+//			isLeaf = true;
+//		else
+//			isLeaf = false;
+//
+//		if(isLeaf){
+//			return tempb.evaluateBoard();
+//		}
 
 		if(max){
 			int i=0;
@@ -106,12 +111,11 @@ public class CheckersAINode
 					int to = Integer.parseInt(str[j+1]);
 					// could make it throw an exception if the returned int is 0
 					tempb.makeMove(from, to);
-
 				}
 
 				int v = minmax(tempb, false, currHeight + 1, null, alpha, beta);
 				if (v > alpha) {
-					System.out.println("" + v);
+					System.out.println("alpha = " + v);
 					alpha = v;
 					System.out.println(moveList.get(i));
 					// mv.val = v;
@@ -137,7 +141,7 @@ public class CheckersAINode
 				if (v < beta) {
 					System.out.println(moveList.get(i));
 					beta = v;
-					System.out.println("" + v);
+					System.out.println("beta = " + v);
 					// mv.val = v;
 					bestNextMove = moveList.get(i);
 				}
@@ -161,11 +165,11 @@ public class CheckersAINode
 		// minmax(board, max, i, bestMovePrevIteration, alpha, beta);
 		// bestMovePrevIteration = bestNextMove;}
 		// remember to break loop before we run out of time
-		minmax(globalBoard, false, 0, null, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		minmax(globalBoard, true, 0, null, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
 	}
 
-
+    // THE MOVE GENERATOR !!!!!!!
 	public ArrayList<String> moveGen(boolean max, CheckersOp board){
 		ArrayList<String > moves = new ArrayList<String>();
 		// who the player is can be based on the max bool
@@ -174,11 +178,21 @@ public class CheckersAINode
 		if (max) { // if Computer's turn we maximize
 			// i = y = row
 			// j = x = col
+			// Boolean hasj = false;
 			for (int i = 0; i < 8; i++){
 				for (int j = 0; j < 8; j++){
 					if (board.getBoard()[i][j] % 2 == 1){
 						addValidSquareJumpMovesForRed(i,j,"", board);
-						addValidSquareMovesForRed(i,j, board);
+					}
+				}
+			}
+			// ONLY ADD THE SQUARE MOVES IF NO JUMP MOVES ARE AVAILABLE!!!
+			if(genMoves.size() == 0){
+				for (int i = 0; i < 8; i++){
+					for (int j = 0; j < 8; j++){
+						if (board.getBoard()[i][j] % 2 == 1){
+							addValidSquareMovesForRed(i,j, board);
+						}
 					}
 				}
 			}
@@ -190,14 +204,21 @@ public class CheckersAINode
 				for (int j = 0; j < 8; j++){
 					if (board.getBoard()[i][j] % 2 == 0){
 						addValidSquareJumpMovesForBlack(i,j,"", board);
-						addValidSquareMovesForBlack(i,j, board);
+					}
+				}
+			}
+			if(genMoves.size() == 0){
+				for (int i = 0; i < 8; i++){
+					for (int j = 0; j < 8; j++){
+						if (board.getBoard()[i][j] % 2 == 1){
+							addValidSquareMovesForBlack(i,j, board);
+						}
 					}
 				}
 			}
 			moves.addAll(genMoves);
 			genMoves.clear();
 		}
-
 		return moves;
 		//Moves are in StartYStartX,NextYNextX format
 		// example of this is move from StartY = 2 and StartX = 2 to NextY = 3 and NextX = 3 is written 22,33
