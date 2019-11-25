@@ -56,11 +56,9 @@ public class CheckersAINode
 	// Maybe check all jump moves before, normal moves
 	// Maybe change the evaluation method since the evaluation results differ very slightly
 	public int minmax(CheckersOp board, boolean max, int currHeight, String prevItMv , int alpha, int beta ){
-		boolean isLeaf = false;
+		//boolean isLeaf = false;
 		ArrayList<String> moveList = new ArrayList<>();
 		CheckersOp tempb = new CheckersOp(board);
-
-		System.out.println("hej from height " + currHeight);
 
 		if(prevItMv != null){
 //			firstSearchMv = prevItMv;
@@ -76,35 +74,15 @@ public class CheckersAINode
 //			firstSearchMv = moveList.get(0);
 		}
 
-		if(currHeight == 7){
+		if(currHeight == 13){
 			return tempb.evaluateBoard();
 		}
-
-//		if(board.rCount<=1||board.bCount<=1) //This is where you change the depth! And it automatically searches one deeper near the end-game
-//		{
-//			if(currHeight>=7)
-//				isLeaf = true;
-//		}
-//		else if(board.rCount<=3||board.bCount<=3)
-//		{
-//			if(currHeight>=6)
-//				isLeaf = true;
-//		}
-//		else if(currHeight>=5)
-//			isLeaf = true;
-//		else
-//			isLeaf = false;
-//
-//		if(isLeaf){
-//			return tempb.evaluateBoard();
-//		}
 
 		if(max){
 			int i=0;
 			while ((alpha < beta) && (i < moveList.size())){
 				// might want to remove the firstSearchMv and then add it at the start of the list such that we start our search from there
 				// make move on tempb
-				// mv.moves = move; might not be the way to go
 				String[] str = moveList.get(i).split(",");
 				for (int j = 0; j < str.length - 1; j++) {
 					int from = Integer.parseInt(str[j]);
@@ -143,7 +121,7 @@ public class CheckersAINode
 					beta = v;
 					System.out.println("beta = " + v);
 					// mv.val = v;
-					bestNextMove = moveList.get(i);
+					//bestNextMove = moveList.get(i);
 				}
 				i++;
 			}
@@ -188,6 +166,7 @@ public class CheckersAINode
 			}
 			// ONLY ADD THE SQUARE MOVES IF NO JUMP MOVES ARE AVAILABLE!!!
 			if(genMoves.size() == 0){
+				System.out.println("hej from Square moveGen for red piece");
 				for (int i = 0; i < 8; i++){
 					for (int j = 0; j < 8; j++){
 						if (board.getBoard()[i][j] % 2 == 1){
@@ -202,7 +181,8 @@ public class CheckersAINode
 		else { //if player's turn we minimize
 			for (int i = 0; i < 8; i++){
 				for (int j = 0; j < 8; j++){
-					if (board.getBoard()[i][j] % 2 == 0){
+					int piece = board.getBoard()[i][j];
+					if (piece % 2 == 0 && piece != 0){
 						addValidSquareJumpMovesForBlack(i,j,"", board);
 					}
 				}
@@ -210,7 +190,8 @@ public class CheckersAINode
 			if(genMoves.size() == 0){
 				for (int i = 0; i < 8; i++){
 					for (int j = 0; j < 8; j++){
-						if (board.getBoard()[i][j] % 2 == 1){
+						int piece = board.getBoard()[i][j];
+						if (piece % 2 == 0 && piece != 0){
 							addValidSquareMovesForBlack(i,j, board);
 						}
 					}
@@ -362,9 +343,9 @@ public class CheckersAINode
 	{
 
 		//These are helper methods: find the possible moves for any given square
-		if(board.getBoard()[row][col]==2)//If we found a normal red piece
+		if(board.getBoard()[row][col]==2)//If we found a normal black piece
 		{
-			//Later, we may optimize the searching order by putting the jumps first
+
 			if(board.checkValidMove(10*row+col,10*(row-1)+col-1)==1) //Moving up-left
 			{
 				String lastMove=(10*row+col) + "," + (10*(row-1)+col-1);
