@@ -13,13 +13,13 @@ public class CheckersAITree
 	
 	public void buildTree()
 	{
-		root.buildTree(11);
+		root.buildTree(false);
 	}
 	
 	public String findBestMove() //Returns the sequence of best moves
 	{
 		System.out.println("The AI is thinking . . .");
-		root.buildTree(0);
+		root.buildTree(false);
 		System.out.println(root.bestNextMove);
 		return root.bestNextMove;
 	}

@@ -55,34 +55,39 @@ public class CheckersAINode
 	// The AI makes illegal move avoids jump moves
 	// Maybe check all jump moves before, normal moves
 	// Maybe change the evaluation method since the evaluation results differ very slightly
-	public int minmax(CheckersOp board, boolean max, int currHeight, String prevItMv , int alpha, int beta ){
+	public int minmax(CheckersOp board, boolean max, int currHeight, String prevItMv , int alpha, int beta, int playerIsBlack){
 		//boolean isLeaf = false;
 		ArrayList<String> moveList = new ArrayList<>();
 		CheckersOp tempb = new CheckersOp(board);
+
+
+
+		System.out.println("Dybde: " + currHeight);
+		System.out.println("alpha inside minmax: " + alpha + " Beta inside minmax: " + beta);
+		System.out.println("Score:" + tempb.evaluateBoard());
 
 		if(prevItMv != null){
 //			firstSearchMv = prevItMv;
 			// moveList.add(firstSearchMv);
 			// might be able to do this in a better way
 			moveList.add("placeholder");
-			moveList.addAll(moveGen(max, tempb));
+			moveList.addAll(moveGen(max, tempb, playerIsBlack));
 			moveList.remove(prevItMv);
 			moveList.add(0,prevItMv);
-		}
-		else{
-			moveList = moveGen(max, tempb);
+		} else{
+			moveList = moveGen(max, tempb, playerIsBlack);
 //			firstSearchMv = moveList.get(0);
 		}
 
-		if(currHeight == 13){
+		if(currHeight == 3){
 			return tempb.evaluateBoard();
 		}
-
 		if(max){
 			int i=0;
 			while ((alpha < beta) && (i < moveList.size())){
 				// might want to remove the firstSearchMv and then add it at the start of the list such that we start our search from there
 				// make move on tempb
+
 				String[] str = moveList.get(i).split(",");
 				for (int j = 0; j < str.length - 1; j++) {
 					int from = Integer.parseInt(str[j]);
@@ -91,19 +96,19 @@ public class CheckersAINode
 					tempb.makeMove(from, to);
 				}
 
-				int v = minmax(tempb, false, currHeight + 1, null, alpha, beta);
+				int v = minmax(tempb, false, currHeight + 1, null, alpha, beta, playerIsBlack);
 				if (v > alpha) {
-					System.out.println("alpha = " + v);
+//					System.out.println("alpha = " + v);
 					alpha = v;
 					System.out.println(moveList.get(i));
 					// mv.val = v;
 					bestNextMove = moveList.get(i);
 				}
+				// undo move on tempb
 				i++;
 			}
 			return alpha;
-		}
-		else {
+		} else {
 			int i = 0;
 			while ((alpha < beta) && (i < moveList.size())) {
 				// make move on tempb
@@ -115,7 +120,7 @@ public class CheckersAINode
 					// could make it throw an exception if the returned int is 0
 					tempb.makeMove(from, to);
 				}
-				int v = minmax(tempb, true, currHeight + 1, null, alpha, beta);
+				int v = minmax(tempb, true, currHeight + 1, null, alpha, beta, playerIsBlack);
 				if (v < beta) {
 					System.out.println(moveList.get(i));
 					beta = v;
@@ -123,14 +128,16 @@ public class CheckersAINode
 					// mv.val = v;
 					//bestNextMove = moveList.get(i);
 				}
+				// undo move on tempb
 				i++;
 			}
 			return beta;
 		}
 	}
 
-	public void buildTree(int currheight){
-
+	public void buildTree(boolean playerStart){
+		//This is for using modulus depending on who starts
+		int playerIsBlack = 1;
 		// run minmax iteratively
 		// firts run with max depth of 1 than with 2 ..
 		// have it in a while loop maybe where we can break, if we are reaching the time limit (15 sec)
@@ -143,12 +150,20 @@ public class CheckersAINode
 		// minmax(board, max, i, bestMovePrevIteration, alpha, beta);
 		// bestMovePrevIteration = bestNextMove;}
 		// remember to break loop before we run out of time
-		minmax(globalBoard, true, 0, null, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+		if(!playerStart) {
+//			globalBoard.makeMove(00,2);
+			 playerIsBlack = 0;
+		}
+//		}else {
+			minmax(globalBoard, true, 0, null, Integer.MIN_VALUE, Integer.MAX_VALUE, playerIsBlack);
+//		}
+
 
 	}
 
     // THE MOVE GENERATOR !!!!!!!
-	public ArrayList<String> moveGen(boolean max, CheckersOp board){
+	public ArrayList<String> moveGen(boolean max, CheckersOp board, int playerIsBlack){
 		ArrayList<String > moves = new ArrayList<String>();
 		// who the player is can be based on the max bool
 		// Generate some moves based on the player and the board
@@ -156,10 +171,10 @@ public class CheckersAINode
 		if (max) { // if Computer's turn we maximize
 			// i = y = row
 			// j = x = col
-			// Boolean hasj = false;
+			// Boolean has = false;
 			for (int i = 0; i < 8; i++){
 				for (int j = 0; j < 8; j++){
-					if (board.getBoard()[i][j] % 2 == 1){
+					if (board.getBoard()[i][j] % 2 == playerIsBlack + 1){
 						addValidSquareJumpMovesForRed(i,j,"", board);
 					}
 				}
@@ -169,7 +184,7 @@ public class CheckersAINode
 				System.out.println("hej from Square moveGen for red piece");
 				for (int i = 0; i < 8; i++){
 					for (int j = 0; j < 8; j++){
-						if (board.getBoard()[i][j] % 2 == 1){
+						if (board.getBoard()[i][j] % 2 == playerIsBlack + 1){
 							addValidSquareMovesForRed(i,j, board);
 						}
 					}
@@ -177,12 +192,11 @@ public class CheckersAINode
 			}
 			moves.addAll(genMoves);
 			genMoves.clear();
-		}
-		else { //if player's turn we minimize
+		} else { //if player's turn we minimize
 			for (int i = 0; i < 8; i++){
 				for (int j = 0; j < 8; j++){
 					int piece = board.getBoard()[i][j];
-					if (piece % 2 == 0 && piece != 0){
+					if (piece % 2 == 0 && piece != playerIsBlack){
 						addValidSquareJumpMovesForBlack(i,j,"", board);
 					}
 				}
@@ -191,7 +205,7 @@ public class CheckersAINode
 				for (int i = 0; i < 8; i++){
 					for (int j = 0; j < 8; j++){
 						int piece = board.getBoard()[i][j];
-						if (piece % 2 == 0 && piece != 0){
+						if (piece % 2 == 0 && piece != playerIsBlack){
 							addValidSquareMovesForBlack(i,j, board);
 						}
 					}
