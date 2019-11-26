@@ -17,6 +17,8 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 	private CheckersOp data;
 	private boolean isTwoHumans; //This decides whether it's a human v. human or human v. computer match. (Could've made two classes, but this was simpler).
 	private boolean gameOver;
+	public int f;
+	public int k;
 	
 	public CheckersGUIPruning(String title, boolean hasTwoHumans)
 	{
@@ -95,7 +97,13 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 			return;
 		//Note: the winner check still needs some refining in here
 		int currClick = Integer.parseInt(evt.getActionCommand());
-		int didWork = data.makeMove(prevClicked, currClick);
+		k = 1;
+		f = 0;
+		if(data.hasJump(currClick) && f == 0){
+			k = 0;
+			f++;
+		}
+		int didWork = data.makeMove(prevClicked, currClick, k);
 		if(didWork!=0)
 		{
 			System.out.println("Human has moved.");
@@ -144,6 +152,7 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 										
 	
 					long startMillis = System.currentTimeMillis();
+					f = 0;
 					CheckersAITree thinker = new CheckersAITree(data); //CheckersAITree will clone it for us
 					String bestMoves = thinker.findBestMove(); //We ask our AI Tree what the best move is
                     System.out.println(bestMoves);
@@ -151,7 +160,7 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 					System.out.println("The AI moved: " + bestMoves);
 					for(int i=0; i<arrMoves.length-1; i++)
 					{
-						data.makeMove(Integer.parseInt(arrMoves[i]),Integer.parseInt(arrMoves[i+1]));
+						data.makeMove(Integer.parseInt(arrMoves[i]),Integer.parseInt(arrMoves[i+1]), i);
 					}
 					drawBoard();
 					long endMillis = System.currentTimeMillis();

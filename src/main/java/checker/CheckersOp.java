@@ -15,12 +15,17 @@ public class CheckersOp {
 	public int turnCount; //Just a counter -- NOT whose turn it is
 	public int turn; //Bizzarely, 0 is black, and 1 is red
 	public int currJumper;
+	public int prevrCount;
+	public int prevbCount;
+	public int prevturnCount; //Just a counter -- NOT whose turn it is
+	public int prevturn; //Bizzarely, 0 is black, and 1 is red
+	public int[][] prevBoard;
 
 	public void resetBoard()
 	{
 		
-		board = new int[][] 
-				{{0, 1, 0, 1, 0, 1, 0, 1},   
+		board = new int[][]
+				{{0, 1, 0, 1, 0, 1, 0, 1},
 				{1, 0, 1, 0, 1, 0, 1, 0},
 				{0, 1, 0, 1, 0, 1, 0, 1},
 				{0, 0, 0, 0, 0, 0, 0, 0},
@@ -28,6 +33,16 @@ public class CheckersOp {
 				{2, 0, 2, 0, 2, 0, 2, 0},
 				{0, 2, 0, 2, 0, 2, 0, 2},
 				{2, 0, 2, 0, 2, 0, 2, 0}};
+//		board = new int[][]
+//						{{0, 0, 0, 0, 0, 0, 0, 1},
+//						{0, 0, 0, 0, 1, 0, 1, 0},
+//						{0, 0, 0, 1, 0, 1, 0, 1},
+//						{0, 0, 1, 0, 0, 0, 0, 0},
+//						{0, 2, 0, 0, 0, 0, 0, 0},
+//						{2, 0, 0, 0, 2, 0, 0, 0},
+//						{0, 0, 0, 0, 0, 0, 0, 2},
+//						{0, 0, 0, 0, 2, 0, 2, 0}};
+
 				
 
 		//Remember to change this later! This was just for testing the endgame:
@@ -88,6 +103,19 @@ public class CheckersOp {
 		turn = template.turn;
 		currJumper = template.currJumper;
 	}
+
+	public void undoLastMove(){
+		// board = prevBoard;
+		for (int i = 0; i < prevBoard.length; i++) {
+			System.arraycopy(prevBoard[i], 0, board[i], 0, prevBoard[i].length);
+		}
+		currJumper = -1;
+		turn = prevturn;
+		turnCount = prevturnCount;
+		rCount = prevrCount;
+		bCount = prevbCount;
+
+	}
 	
 	public int makeMove(int from, int to){
 		// example of this is 25 / 10 = 2.5 but since it is int is floored to 2
@@ -118,6 +146,82 @@ public class CheckersOp {
 			if(from != currJumper) return 0;
 			if(moveType != 2) return 0;
 			
+		}
+		board[toY][toX] = board[fromY][fromX];
+		board[fromY][fromX] = 0;
+
+		if(moveType == 2){
+
+			int y = (toY - fromY)/2;
+			int x = (toX - fromX)/2;
+			int middle = board[fromY + y][fromX + x];
+			if(pieceType == 2 || pieceType == 4){
+				if(middle == 1 || middle == 3){
+					board[fromY + y][fromX + x] = 0;
+					rCount--;
+				}else return 0;
+			}
+
+			if(pieceType == 1 || pieceType == 3){
+				if(middle == 2 || middle == 4){
+					board[fromY + y][fromX + x] = 0;
+					bCount--;
+				}else return 0;
+			}
+		}
+		//Check to see if a King was born
+		if(toY == 0 || toY == 7){
+			if(pieceType == 1) board[toY][toX] = 3;
+			if(pieceType == 2) board[toY][toX] = 4;
+		}
+		turnCount++;
+		if(currJumper != -1) currJumper = -1;
+		boolean testHasJump = hasJump(to);
+		if(moveType == 2 && testHasJump) currJumper = to;
+		else switchTurn();
+
+		return moveType;
+	}
+
+	public int makeMove(int from, int to, int start){
+		// example of this is 25 / 10 = 2.5 but since it is int is floored to 2
+		// example of this is 25 % 10 removes all multiples of 10,
+		// so it basicly removes 10 and keeps doing it as long as the remainder is higher than 10
+		if(start == 0){
+			prevBoard = new int[8][8];
+			for (int i = 0; i < board.length; i++) {
+				System.arraycopy(board[i], 0, prevBoard[i], 0, board[i].length);
+			}
+			prevbCount = bCount;
+			prevrCount = rCount;
+			prevturn = turn;
+			prevturnCount = turnCount;
+		}
+		int fromY = from / 10;
+		int fromX = from % 10;
+		int toY = to / 10;
+		int toX = to % 10;
+
+
+		int moveType; //stores whether it is a move, jump or invalid
+
+		int pieceType = board[fromY][fromX]; //finds the type of piece at the from position
+
+		if(pieceType == 0) return 0; //if you are moving from a blank face, return false
+
+		if(pieceType %2 != turn) return 0;//it is not the person's turn
+
+		moveType = checkValidMove(from, to);
+
+		if(moveType == 0) return 0;
+
+		//now move the piece accordingly. moveType is 1 if it is a normal move or 2 if it is a jump
+
+		if(currJumper != -1)
+		{
+			if(from != currJumper) return 0;
+			if(moveType != 2) return 0;
+
 		}
 		board[toY][toX] = board[fromY][fromX];
 		board[fromY][fromX] = 0;

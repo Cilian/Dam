@@ -20,6 +20,7 @@ public class CheckersAINode
 	// public boolean isLeaf;
 	public ArrayList<String> genMoves = new ArrayList<>();
 	//public int currHeight;
+	public int ch;
 	public CheckersOp globalBoard;
 	public String bestMovePrevIteration;
 	public String firstSearchMv;
@@ -29,7 +30,7 @@ public class CheckersAINode
 
 	public CheckersAINode(CheckersOp inputBoard, String moveSequence, int inputCurrHeight){
 		globalBoard = new CheckersOp(inputBoard);
-
+		ch = 0;
 		//String moves = moveSequence;
 		bestNextMove = null;
 		// alpha = Integer.MIN_VALUE;
@@ -57,6 +58,7 @@ public class CheckersAINode
 	// Maybe change the evaluation method since the evaluation results differ very slightly
 	public int minmax(CheckersOp board, boolean max, int currHeight, String prevItMv , int alpha, int beta ){
 		//boolean isLeaf = false;
+		ch++;
 		ArrayList<String> moveList = new ArrayList<>();
 		CheckersOp tempb = new CheckersOp(board);
 
@@ -74,13 +76,13 @@ public class CheckersAINode
 //			firstSearchMv = moveList.get(0);
 		}
 
-		if(currHeight == 13){
+		if(currHeight == 9){
 			return tempb.evaluateBoard();
 		}
 
 		if(max){
 			int i=0;
-			while ((alpha < beta) && (i < moveList.size())){
+			while ((alpha<beta) && (i<moveList.size())){
 				// might want to remove the firstSearchMv and then add it at the start of the list such that we start our search from there
 				// make move on tempb
 				String[] str = moveList.get(i).split(",");
@@ -88,11 +90,11 @@ public class CheckersAINode
 					int from = Integer.parseInt(str[j]);
 					int to = Integer.parseInt(str[j+1]);
 					// could make it throw an exception if the returned int is 0
-					tempb.makeMove(from, to);
+					tempb.makeMove(from, to, j);
 				}
 
 				int v = minmax(tempb, false, currHeight + 1, null, alpha, beta);
-				if (v > alpha) {
+				if (v >= alpha) {
 					System.out.println("alpha = " + v);
 					alpha = v;
 					System.out.println(moveList.get(i));
@@ -100,6 +102,7 @@ public class CheckersAINode
 					bestNextMove = moveList.get(i);
 				}
 				i++;
+				tempb.undoLastMove();
 			}
 			return alpha;
 		}
@@ -113,10 +116,10 @@ public class CheckersAINode
 					int from = Integer.parseInt(str[j]);
 					int to = Integer.parseInt(str[j+1]);
 					// could make it throw an exception if the returned int is 0
-					tempb.makeMove(from, to);
+					tempb.makeMove(from, to, j);
 				}
 				int v = minmax(tempb, true, currHeight + 1, null, alpha, beta);
-				if (v < beta) {
+				if (v <= beta) {
 					System.out.println(moveList.get(i));
 					beta = v;
 					System.out.println("beta = " + v);
@@ -124,6 +127,7 @@ public class CheckersAINode
 					//bestNextMove = moveList.get(i);
 				}
 				i++;
+				tempb.undoLastMove();
 			}
 			return beta;
 		}
@@ -144,6 +148,7 @@ public class CheckersAINode
 		// bestMovePrevIteration = bestNextMove;}
 		// remember to break loop before we run out of time
 		minmax(globalBoard, true, 0, null, Integer.MIN_VALUE, Integer.MAX_VALUE);
+		System.out.println("ch = " + ch);
 
 	}
 
@@ -156,7 +161,6 @@ public class CheckersAINode
 		if (max) { // if Computer's turn we maximize
 			// i = y = row
 			// j = x = col
-			// Boolean hasj = false;
 			for (int i = 0; i < 8; i++){
 				for (int j = 0; j < 8; j++){
 					if (board.getBoard()[i][j] % 2 == 1){
