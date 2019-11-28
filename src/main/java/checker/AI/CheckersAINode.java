@@ -21,6 +21,7 @@ public class CheckersAINode
 	public ArrayList<String> genMoves = new ArrayList<>();
 	//public int currHeight;
 	public int ch;
+	public int allmv;
 	public CheckersOp globalBoard;
 	public String bestMovePrevIteration;
 	public String firstSearchMv;
@@ -31,6 +32,7 @@ public class CheckersAINode
 	public CheckersAINode(CheckersOp inputBoard, String moveSequence, int inputCurrHeight){
 		globalBoard = new CheckersOp(inputBoard);
 		ch = 0;
+		allmv = 0;
 		//String moves = moveSequence;
 		bestNextMove = null;
 		// alpha = Integer.MIN_VALUE;
@@ -60,31 +62,35 @@ public class CheckersAINode
 		//boolean isLeaf = false;
 		ch++;
 		ArrayList<String> moveList = new ArrayList<>();
-		CheckersOp tempb = new CheckersOp(board);
+
 
 		if(prevItMv != null){
 //			firstSearchMv = prevItMv;
 			// moveList.add(firstSearchMv);
 			// might be able to do this in a better way
 			moveList.add("placeholder");
-			moveList.addAll(moveGen(max, tempb));
+			moveList.addAll(moveGen(max, board));
 			moveList.remove(prevItMv);
 			moveList.add(0,prevItMv);
 		}
 		else{
-			moveList = moveGen(max, tempb);
+			moveList = moveGen(max, board);
 //			firstSearchMv = moveList.get(0);
 		}
 
 		if(currHeight == 9){
-			return tempb.evaluateBoard();
+			return board.evaluateBoard();
 		}
+		allmv+= moveList.size();
+		System.out.println("movelist size = " + moveList.size());
 
 		if(max){
 			int i=0;
 			while ((alpha<beta) && (i<moveList.size())){
 				// might want to remove the firstSearchMv and then add it at the start of the list such that we start our search from there
 				// make move on tempb
+				CheckersOp tempb = new CheckersOp(board);
+
 				String[] str = moveList.get(i).split(",");
 				for (int j = 0; j < str.length - 1; j++) {
 					int from = Integer.parseInt(str[j]);
@@ -94,7 +100,7 @@ public class CheckersAINode
 				}
 
 				int v = minmax(tempb, false, currHeight + 1, null, alpha, beta);
-				if (v >= alpha) {
+				if (v > alpha) {
 					System.out.println("alpha = " + v);
 					alpha = v;
 					System.out.println(moveList.get(i));
@@ -102,7 +108,7 @@ public class CheckersAINode
 					bestNextMove = moveList.get(i);
 				}
 				i++;
-				tempb.undoLastMove();
+				//tempb.undoLastMove();
 			}
 			return alpha;
 		}
@@ -111,6 +117,8 @@ public class CheckersAINode
 			while ((alpha < beta) && (i < moveList.size())) {
 				// make move on tempb
 				// mv.moves = move; might not be the way to go
+				CheckersOp tempb = new CheckersOp(board);
+
 				String[] str = moveList.get(i).split(",");
 				for (int j = 0; j < str.length - 1; j++) {
 					int from = Integer.parseInt(str[j]);
@@ -119,7 +127,7 @@ public class CheckersAINode
 					tempb.makeMove(from, to, j);
 				}
 				int v = minmax(tempb, true, currHeight + 1, null, alpha, beta);
-				if (v <= beta) {
+				if (v < beta) {
 					System.out.println(moveList.get(i));
 					beta = v;
 					System.out.println("beta = " + v);
@@ -127,7 +135,7 @@ public class CheckersAINode
 					//bestNextMove = moveList.get(i);
 				}
 				i++;
-				tempb.undoLastMove();
+				//tempb.undoLastMove();
 			}
 			return beta;
 		}
@@ -149,10 +157,13 @@ public class CheckersAINode
 		// remember to break loop before we run out of time
 		minmax(globalBoard, true, 0, null, Integer.MIN_VALUE, Integer.MAX_VALUE);
 		System.out.println("ch = " + ch);
+		System.out.println("allmv = " + allmv);
+		ch = 0;
+		allmv = 0;
 
 	}
 
-    // THE MOVE GENERATOR !!!!!!!
+	// THE MOVE GENERATOR !!!!!!!
 	public ArrayList<String> moveGen(boolean max, CheckersOp board){
 		ArrayList<String > moves = new ArrayList<String>();
 		// who the player is can be based on the max bool
@@ -272,7 +283,6 @@ public class CheckersAINode
 				}
 			}
 
-			//Later, we may optimize the searching order by putting the jumps first
 			if(tboard.checkValidMove(10*row+col,10*(row+2)+col-2)==2) //Jumping down left (this is only possible when moving down-left is impossible)
 			{
 				// String tempMove = temp  + ","+(10*(row+2)+col-2);
@@ -405,7 +415,6 @@ public class CheckersAINode
 				}
 			}
 
-			//Later, we may optimize the searching order by putting the jumps first
 			if(tboard.checkValidMove(10*row+col,10*(row-2)+col-2)==2) //Jumping down left (this is only possible when moving down-left is impossible)
 			{
 				// String tempMove = temp  + ","+(10*(row+2)+col-2);
