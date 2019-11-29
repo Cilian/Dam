@@ -173,6 +173,7 @@ public class CheckersOp {
 		if(toY == 0 || toY == 7){
 			if(pieceType == 1) board[toY][toX] = 3;
 			if(pieceType == 2) board[toY][toX] = 4;
+			return 1;
 		}
 		turnCount++;
 		if(currJumper != -1) currJumper = -1;

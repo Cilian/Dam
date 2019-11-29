@@ -25,6 +25,7 @@ public class CheckersAINode
 	public CheckersOp globalBoard;
 	public String bestMovePrevIteration;
 	public String firstSearchMv;
+	public CheckersMove mv;
 	public String bestNextMove;
 
 
@@ -35,6 +36,7 @@ public class CheckersAINode
 		allmv = 0;
 		//String moves = moveSequence;
 		bestNextMove = null;
+		mv = new CheckersMove("", Integer.MIN_VALUE);
 		// alpha = Integer.MIN_VALUE;
 		// beta = Integer.MAX_VALUE;
 		//currHeight = inputCurrHeight;
@@ -100,12 +102,20 @@ public class CheckersAINode
 				}
 
 				int v = minmax(tempb, false, currHeight + 1, null, alpha, beta);
+				if(currHeight == 0){
+					CheckersMove tmv = new CheckersMove(moveList.get(i), v);
+					if(this.mv.val < tmv.val){
+						this.mv = tmv;
+						bestNextMove = tmv.moves;
+					}
+
+				}
 				if (v > alpha) {
 					System.out.println("alpha = " + v);
 					alpha = v;
 					System.out.println(moveList.get(i));
 					// mv.val = v;
-					bestNextMove = moveList.get(i);
+					//bestNextMove = moveList.get(i);
 				}
 				i++;
 				//tempb.undoLastMove();
