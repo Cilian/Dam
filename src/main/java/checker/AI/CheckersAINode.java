@@ -25,8 +25,12 @@ public class CheckersAINode
 	public CheckersOp globalBoard;
 	public String bestMovePrevIteration;
 	public String firstSearchMv;
+	private long start;
+	private boolean stop;
+	private long currMillis;
 	public CheckersMove mv;
 	public String bestNextMove;
+	private int leafHeight;
 
 
 
@@ -34,6 +38,7 @@ public class CheckersAINode
 		globalBoard = new CheckersOp(inputBoard);
 		ch = 0;
 		allmv = 0;
+		stop = false;
 		//String moves = moveSequence;
 		bestNextMove = null;
 		mv = new CheckersMove("", Integer.MIN_VALUE);
@@ -60,95 +65,101 @@ public class CheckersAINode
 	// The AI makes illegal move avoids jump moves
 	// Maybe check all jump moves before, normal moves
 	// Maybe change the evaluation method since the evaluation results differ very slightly
-	public int minmax(CheckersOp board, boolean max, int currHeight, String prevItMv , int alpha, int beta ){
-		//boolean isLeaf = false;
-		ch++;
-		ArrayList<String> moveList = new ArrayList<>();
+	public int minmax(CheckersOp board, boolean max, int currHeight, String prevItMv, int alpha, int beta ){
+		currMillis = System.currentTimeMillis();
+		if (!stop) {
+			if((currMillis - start) >= 14700){
+				System.out.println("stop");
+				stop = true;
+			}
+			//boolean isLeaf = false;
+			ch++;
+			ArrayList<String> moveList = new ArrayList<>();
 
-
-		if(prevItMv != null){
+			if (prevItMv != null) {
 //			firstSearchMv = prevItMv;
-			// moveList.add(firstSearchMv);
-			// might be able to do this in a better way
-			moveList.add("placeholder");
-			moveList.addAll(moveGen(max, board));
-			moveList.remove(prevItMv);
-			moveList.add(0,prevItMv);
-		}
-		else{
-			moveList = moveGen(max, board);
+				// moveList.add(firstSearchMv);
+				// might be able to do this in a better way
+				System.out.println("prevItMv = " +  prevItMv + "**************");
+				moveList.addAll(moveGen(max, board));
+				moveList.remove(prevItMv);
+				moveList.add(0, prevItMv);
+			} else {
+				moveList = moveGen(max, board);
 //			firstSearchMv = moveList.get(0);
-		}
+			}
 
-		if(currHeight == 9){
-			return board.evaluateBoard();
-		}
-		allmv+= moveList.size();
-		System.out.println("movelist size = " + moveList.size());
+			if (currHeight == leafHeight) {
+				return board.evaluateBoard();
+			}
+			allmv += moveList.size();
+			System.out.println("movelist size = " + moveList.size());
 
-		if(max){
-			int i=0;
-			while ((alpha<beta) && (i<moveList.size())){
-				// might want to remove the firstSearchMv and then add it at the start of the list such that we start our search from there
-				// make move on tempb
-				CheckersOp tempb = new CheckersOp(board);
+			if (max) {
+				int i = 0;
+				while ((alpha < beta) && (i < moveList.size())) {
+					// might want to remove the firstSearchMv and then add it at the start of the list such that we start our search from there
+					// make move on tempb
+					CheckersOp tempb = new CheckersOp(board);
 
-				String[] str = moveList.get(i).split(",");
-				for (int j = 0; j < str.length - 1; j++) {
-					int from = Integer.parseInt(str[j]);
-					int to = Integer.parseInt(str[j+1]);
-					// could make it throw an exception if the returned int is 0
-					tempb.makeMove(from, to, j);
-				}
-
-				int v = minmax(tempb, false, currHeight + 1, null, alpha, beta);
-				if(currHeight == 0){
-					CheckersMove tmv = new CheckersMove(moveList.get(i), v);
-					if(this.mv.val < tmv.val){
-						this.mv = tmv;
-						bestNextMove = tmv.moves;
+					String[] str = moveList.get(i).split(",");
+					for (int j = 0; j < str.length - 1; j++) {
+						int from = Integer.parseInt(str[j]);
+						int to = Integer.parseInt(str[j + 1]);
+						// could make it throw an exception if the returned int is 0
+						tempb.makeMove(from, to, j);
 					}
 
-				}
-				if (v > alpha) {
-					System.out.println("alpha = " + v);
-					alpha = v;
-					System.out.println(moveList.get(i));
-					// mv.val = v;
-					//bestNextMove = moveList.get(i);
-				}
-				i++;
-				//tempb.undoLastMove();
-			}
-			return alpha;
-		}
-		else {
-			int i = 0;
-			while ((alpha < beta) && (i < moveList.size())) {
-				// make move on tempb
-				// mv.moves = move; might not be the way to go
-				CheckersOp tempb = new CheckersOp(board);
+					int v = minmax(tempb, false, currHeight + 1, null, alpha, beta);
+					if (currHeight == 0) {
+						CheckersMove tmv = new CheckersMove(moveList.get(i), v);
+						if (mv.val < tmv.val) {
+							mv = tmv;
+							bestNextMove = tmv.moves;
+						}
 
-				String[] str = moveList.get(i).split(",");
-				for (int j = 0; j < str.length - 1; j++) {
-					int from = Integer.parseInt(str[j]);
-					int to = Integer.parseInt(str[j+1]);
-					// could make it throw an exception if the returned int is 0
-					tempb.makeMove(from, to, j);
+					}
+					if (v > alpha) {
+						System.out.println("alpha = " + v);
+						alpha = v;
+						System.out.println(moveList.get(i));
+						// mv.val = v;
+						//bestNextMove = moveList.get(i);
+					}
+					i++;
+					//tempb.undoLastMove();
 				}
-				int v = minmax(tempb, true, currHeight + 1, null, alpha, beta);
-				if (v < beta) {
-					System.out.println(moveList.get(i));
-					beta = v;
-					System.out.println("beta = " + v);
-					// mv.val = v;
-					//bestNextMove = moveList.get(i);
+				return alpha;
+			} else {
+				int i = 0;
+				while ((alpha < beta) && (i < moveList.size())) {
+					// make move on tempb
+					// mv.moves = move; might not be the way to go
+					CheckersOp tempb = new CheckersOp(board);
+
+					String[] str = moveList.get(i).split(",");
+					for (int j = 0; j < str.length - 1; j++) {
+						int from = Integer.parseInt(str[j]);
+						int to = Integer.parseInt(str[j + 1]);
+						// could make it throw an exception if the returned int is 0
+						tempb.makeMove(from, to, j);
+					}
+					int v = minmax(tempb, true, currHeight + 1, null, alpha, beta);
+					if (v < beta) {
+						System.out.println(moveList.get(i));
+						beta = v;
+						System.out.println("beta = " + v);
+						// mv.val = v;
+						//bestNextMove = moveList.get(i);
+					}
+					i++;
+					//tempb.undoLastMove();
 				}
-				i++;
-				//tempb.undoLastMove();
+				return beta;
 			}
-			return beta;
 		}
+		if (max) return alpha;
+		else return beta;
 	}
 
 	public void buildTree(int currheight){
@@ -165,11 +176,27 @@ public class CheckersAINode
 		// minmax(board, max, i, bestMovePrevIteration, alpha, beta);
 		// bestMovePrevIteration = bestNextMove;}
 		// remember to break loop before we run out of time
-		minmax(globalBoard, true, 0, null, Integer.MIN_VALUE, Integer.MAX_VALUE);
-		System.out.println("ch = " + ch);
-		System.out.println("allmv = " + allmv);
-		ch = 0;
-		allmv = 0;
+		leafHeight = 1;
+		start = System.currentTimeMillis();
+		currMillis = System.currentTimeMillis();
+		// System.out.println("time " + (currMillis - start));
+		bestMovePrevIteration = null;
+		while (!stop){
+			System.out.println("leaf = " + leafHeight);
+			minmax(globalBoard, true, 0, bestMovePrevIteration, Integer.MIN_VALUE, Integer.MAX_VALUE);
+			bestMovePrevIteration = bestNextMove;
+			System.out.println("bestMovePrevIteration = " + bestMovePrevIteration);
+			System.out.println("ch = " + ch);
+			System.out.println("allmv = " + allmv);
+			ch = 0;
+			allmv = 0;
+			++leafHeight;
+		}
+		System.out.println("Last search was "  + leafHeight + " deep as the leafHeight");
+		System.out.println("Time in sec is: " + (System.currentTimeMillis() - start) / 1000);
+		stop = false;
+		leafHeight = 0;
+		System.out.println("LeafHeight is now " + leafHeight);
 
 	}
 
@@ -300,7 +327,12 @@ public class CheckersAINode
 				CheckersOp tempBoard = new CheckersOp(tboard);
 				int to = (10*(row+2)+col-2);
 				int from = row*10 + col;
-				tempBoard.makeMove(from, to);
+				int movety = tempBoard.makeMove(from, to);
+				if(movety == 1 || movety == 0){
+					temp = temp.substring(0,temp.length()-1);
+					genMoves.add(temp);
+					return;
+				}
 				addValidSquareJumpMovesForRed((row+2), col-2, temp, tempBoard);
 			}
 
@@ -309,7 +341,12 @@ public class CheckersAINode
 				CheckersOp tempBoard = new CheckersOp(tboard);
 				int to = (10*(row+2)+col+2);
 				int from = row*10 + col;
-				tempBoard.makeMove(from, to);
+				int movety = tempBoard.makeMove(from, to);
+				if(movety == 1 || movety == 0){
+					temp = temp.substring(0,temp.length()-1);
+					genMoves.add(temp);
+					return;
+				}
 				addValidSquareJumpMovesForRed((row+2), col+2, temp, tempBoard);
 			}
 		}
@@ -329,7 +366,12 @@ public class CheckersAINode
 				CheckersOp tempBoard = new CheckersOp(tboard);
 				int to = (10*(row+2)+col-2);
 				int from = row*10 + col;
-				tempBoard.makeMove(from, to);
+				int movety = tempBoard.makeMove(from, to);
+				if(movety == 1 || movety == 0){
+					temp = temp.substring(0,temp.length()-1);
+					genMoves.add(temp);
+					return;
+				}
 				addValidSquareJumpMovesForRed((row+2), col-2, temp, tempBoard);
 			}
 
@@ -338,7 +380,12 @@ public class CheckersAINode
 				CheckersOp tempBoard = new CheckersOp(tboard);
 				int to = (10*(row+2)+col+2);
 				int from = row*10 + col;
-				tempBoard.makeMove(from, to);
+				int movety = tempBoard.makeMove(from, to);
+				if(movety == 1 || movety == 0){
+					temp = temp.substring(0,temp.length()-1);
+					genMoves.add(temp);
+					return;
+				}
 				addValidSquareJumpMovesForRed((row+2), col+2, temp, tempBoard);
 			}
 
@@ -347,7 +394,12 @@ public class CheckersAINode
 				CheckersOp tempBoard = new CheckersOp(tboard);
 				int to = (10*(row-2)+col-2);
 				int from = row*10 + col;
-				tempBoard.makeMove(from, to);
+				int movety = tempBoard.makeMove(from, to);
+				if(movety == 1 || movety == 0){
+					temp = temp.substring(0,temp.length()-1);
+					genMoves.add(temp);
+					return;
+				}
 				addValidSquareJumpMovesForRed((row-2), col-2, temp, tempBoard);
 			}
 
@@ -356,7 +408,12 @@ public class CheckersAINode
 				CheckersOp tempBoard = new CheckersOp(tboard);
 				int to = (10*(row-2)+col+2);
 				int from = row*10 + col;
-				tempBoard.makeMove(from, to);
+				int movety = tempBoard.makeMove(from, to);
+				if(movety == 1 || movety == 0){
+					temp = temp.substring(0,temp.length()-1);
+					genMoves.add(temp);
+					return;
+				}
 				addValidSquareJumpMovesForRed((row-2), col+2, temp, tempBoard);
 			}
 		}
@@ -432,7 +489,12 @@ public class CheckersAINode
 				CheckersOp tempBoard = new CheckersOp(tboard);
 				int to = (10*(row-2)+col-2);
 				int from = row*10 + col;
-				tempBoard.makeMove(from, to);
+				int movety = tempBoard.makeMove(from, to);
+				if(movety == 1 || movety == 0){
+					temp = temp.substring(0,temp.length()-1);
+					genMoves.add(temp);
+					return;
+				}
 				addValidSquareJumpMovesForRed((row-2), col-2, temp, tempBoard);
 			}
 
@@ -441,7 +503,12 @@ public class CheckersAINode
 				CheckersOp tempBoard = new CheckersOp(tboard);
 				int to = (10*(row-2)+col+2);
 				int from = row*10 + col;
-				tempBoard.makeMove(from, to);
+				int movety = tempBoard.makeMove(from, to);
+				if(movety == 1 || movety == 0){
+					temp = temp.substring(0,temp.length()-1);
+					genMoves.add(temp);
+					return;
+				}
 				addValidSquareJumpMovesForRed((row-2), col+2, temp, tempBoard);
 			}
 		}
@@ -461,7 +528,12 @@ public class CheckersAINode
 				CheckersOp tempBoard = new CheckersOp(tboard);
 				int to = (10*(row+2)+col-2);
 				int from = row*10 + col;
-				tempBoard.makeMove(from, to);
+				int movety = tempBoard.makeMove(from, to);
+				if(movety == 1 || movety == 0){
+					temp = temp.substring(0,temp.length()-1);
+					genMoves.add(temp);
+					return;
+				}
 				addValidSquareJumpMovesForRed((row+2), col-2, temp, tempBoard);
 			}
 
@@ -470,7 +542,12 @@ public class CheckersAINode
 				CheckersOp tempBoard = new CheckersOp(tboard);
 				int to = (10*(row+2)+col+2);
 				int from = row*10 + col;
-				tempBoard.makeMove(from, to);
+				int movety = tempBoard.makeMove(from, to);
+				if(movety == 1 || movety == 0){
+					temp = temp.substring(0,temp.length()-1);
+					genMoves.add(temp);
+					return;
+				}
 				addValidSquareJumpMovesForRed((row+2), col+2, temp, tempBoard);
 			}
 
@@ -479,7 +556,12 @@ public class CheckersAINode
 				CheckersOp tempBoard = new CheckersOp(tboard);
 				int to = (10*(row-2)+col-2);
 				int from = row*10 + col;
-				tempBoard.makeMove(from, to);
+				int movety = tempBoard.makeMove(from, to);
+				if(movety == 1 || movety == 0){
+					temp = temp.substring(0,temp.length()-1);
+					genMoves.add(temp);
+					return;
+				}
 				addValidSquareJumpMovesForRed((row-2), col-2, temp, tempBoard);
 			}
 
@@ -488,7 +570,12 @@ public class CheckersAINode
 				CheckersOp tempBoard = new CheckersOp(tboard);
 				int to = (10*(row-2)+col+2);
 				int from = row*10 + col;
-				tempBoard.makeMove(from, to);
+				int movety = tempBoard.makeMove(from, to);
+				if(movety == 1 || movety == 0){
+					temp = temp.substring(0,temp.length()-1);
+					genMoves.add(temp);
+					return;
+				}
 				addValidSquareJumpMovesForRed((row-2), col+2, temp, tempBoard);
 			}
 		}

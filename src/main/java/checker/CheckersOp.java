@@ -104,18 +104,18 @@ public class CheckersOp {
 		currJumper = template.currJumper;
 	}
 
-	public void undoLastMove(){
-		// board = prevBoard;
-		for (int i = 0; i < prevBoard.length; i++) {
-			System.arraycopy(prevBoard[i], 0, board[i], 0, prevBoard[i].length);
-		}
-		currJumper = -1;
-		turn = prevturn;
-		turnCount = prevturnCount;
-		rCount = prevrCount;
-		bCount = prevbCount;
-
-	}
+//	public void undoLastMove(){
+//		// board = prevBoard;
+//		for (int i = 0; i < prevBoard.length; i++) {
+//			System.arraycopy(prevBoard[i], 0, board[i], 0, prevBoard[i].length);
+//		}
+//		currJumper = -1;
+//		turn = prevturn;
+//		turnCount = prevturnCount;
+//		rCount = prevrCount;
+//		bCount = prevbCount;
+//
+//	}
 	
 	public int makeMove(int from, int to){
 		// example of this is 25 / 10 = 2.5 but since it is int is floored to 2
@@ -173,7 +173,7 @@ public class CheckersOp {
 		if(toY == 0 || toY == 7){
 			if(pieceType == 1) board[toY][toX] = 3;
 			if(pieceType == 2) board[toY][toX] = 4;
-			return 1;
+			moveType = 1;
 		}
 		turnCount++;
 		if(currJumper != -1) currJumper = -1;
@@ -250,6 +250,7 @@ public class CheckersOp {
 		if(toY == 0 || toY == 7){
 			if(pieceType == 1) board[toY][toX] = 3;
 			if(pieceType == 2) board[toY][toX] = 4;
+			moveType = 1;
 		}
 		turnCount++;
 		if(currJumper != -1) currJumper = -1;
@@ -262,6 +263,14 @@ public class CheckersOp {
 
 	public boolean isRedTurn(){
 		return turn == 1;
+	}
+
+	public void setRedTurn(){
+		turn = 1;
+	}
+
+	public void setBlackTurn(){
+		turn = 0;
 	}
 	
 	private void switchTurn(){

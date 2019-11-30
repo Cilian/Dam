@@ -103,33 +103,33 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 			k = 0;
 			f++;
 		}
-		int didWork = data.makeMove(prevClicked, currClick, k);
+		int didWork = data.makeMove(prevClicked, currClick);
 		if(didWork!=0)
 		{
 			System.out.println("Human has moved.");
 			drawBoard();
+//			if (didWork == 1){
+//				data.setRedTurn();
+//			}
 			int winner = data.checkWinner();
 			
 			if(isTwoHumans==true)
 			{
-				if(data.isRedTurn())
-				{
 					if(winner==2)
 					{
 						System.out.println("The Black Player has triumphed! Congratulations, and major props.");
 						gameOver = true;
 						return;
 					}
-				}
-				else if(!data.isRedTurn()) //This means it's black's turn, so red just moved
-				{
+
+
 					if(winner==1)
 					{
 						System.out.println("The Red Player has triumphed! Way to go!");
 						gameOver = true;
 						return;
 					}
-				}
+
 			}
 			
 			if(isTwoHumans==false) //Now it's the computer's move
@@ -160,7 +160,7 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 					System.out.println("The AI moved: " + bestMoves);
 					for(int i=0; i<arrMoves.length-1; i++)
 					{
-						data.makeMove(Integer.parseInt(arrMoves[i]),Integer.parseInt(arrMoves[i+1]), i);
+						data.makeMove(Integer.parseInt(arrMoves[i]),Integer.parseInt(arrMoves[i+1]));
 					}
 					drawBoard();
 					long endMillis = System.currentTimeMillis();
