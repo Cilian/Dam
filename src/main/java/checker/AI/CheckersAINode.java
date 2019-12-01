@@ -24,12 +24,12 @@ public class CheckersAINode
 	public String bestMovePrevIteration;
 	public String firstSearchMv;
 	public String bestNextMove;
+	public boolean playerStart;
 
 
 
 	public CheckersAINode(CheckersOp inputBoard, String moveSequence, int inputCurrHeight){
 		globalBoard = new CheckersOp(inputBoard);
-
 		//String moves = moveSequence;
 		bestNextMove = null;
 		// alpha = Integer.MIN_VALUE;
@@ -137,6 +137,7 @@ public class CheckersAINode
 
 	public void buildTree(boolean playerStart){
 		//This is for using modulus depending on who starts
+		this.playerStart = playerStart;
 		int playerIsBlack = 1;
 		// run minmax iteratively
 		// firts run with max depth of 1 than with 2 ..
@@ -486,4 +487,7 @@ public class CheckersAINode
 	}
 
 
+	public boolean getPlayerIsBlack(){
+		return playerStart;
+	}
 }

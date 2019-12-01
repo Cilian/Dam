@@ -19,7 +19,7 @@ public class CheckersOp {
 	public void resetBoard()
 	{
 		
-		board = new int[][] 
+/*		board = new int[][]
 				{{0, 1, 0, 1, 0, 1, 0, 1},   
 				{1, 0, 1, 0, 1, 0, 1, 0},
 				{0, 1, 0, 1, 0, 1, 0, 1},
@@ -27,7 +27,18 @@ public class CheckersOp {
 				{0, 0, 0, 0, 0, 0, 0, 0},
 				{2, 0, 2, 0, 2, 0, 2, 0},
 				{0, 2, 0, 2, 0, 2, 0, 2},
-				{2, 0, 2, 0, 2, 0, 2, 0}};
+				{2, 0, 2, 0, 2, 0, 2, 0}};*/
+
+
+		board = new int[][]
+				{		{1, 0, 1, 0, 1, 0, 1, 0},
+						{0, 1, 0, 1, 0, 1, 0, 1},
+						{1, 0, 1, 0, 1, 0, 1, 0},
+						{0, 0, 0, 0, 0, 0, 0, 0},
+						{0, 0, 0, 0, 0, 0, 0, 0},
+						{0, 2, 0, 2, 0, 2, 0, 2},
+						{2, 0, 2, 0, 2, 0, 2, 0},
+						{0, 2, 0, 2, 0, 2, 0, 2}};
 				
 
 		//Remember to change this later! This was just for testing the endgame:
@@ -65,7 +76,7 @@ public class CheckersOp {
 		rCount=12;
 		bCount=12;
 		turnCount=0;
-		turn = 0; //0 for black, 1 for red
+		turn = 1; //0 for black, 1 for red
 		currJumper = -1; //-1 to be default state
 		board = new int[8][8];
 		resetBoard();
