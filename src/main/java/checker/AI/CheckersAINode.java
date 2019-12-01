@@ -4,6 +4,7 @@ package checker.AI;
 import checker.CheckersMove;
 import checker.CheckersOp;
 import checker.old.Checker;
+import checker.old.MyStringLengthComparator;
 import checker.old.Piece;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class CheckersAINode
 	private boolean stop;
 	private long currMillis;
 	public CheckersMove mv;
+	private MyStringLengthComparator comparator;
 	public String bestNextMove;
 	private int leafHeight;
 
@@ -41,10 +43,11 @@ public class CheckersAINode
 		stop = false;
 		//String moves = moveSequence;
 		bestNextMove = null;
+		comparator = new MyStringLengthComparator();
 		mv = new CheckersMove("", Integer.MIN_VALUE);
 		// alpha = Integer.MIN_VALUE;
 		// beta = Integer.MAX_VALUE;
-		//currHeight = inputCurrHeight;
+		//currHeight = inputCurrHeight;hej from Square moveGen for red piece
 //		//Here is where you change the depth!!
 //		if(board.rCount<=1||board.bCount<=1) //This is where you change the depth! And it automatically searches one deeper near the end-game
 //		{
@@ -93,7 +96,7 @@ public class CheckersAINode
 				return board.evaluateBoard();
 			}
 			allmv += moveList.size();
-			System.out.println("movelist size = " + moveList.size());
+			//System.out.println("movelist size = " + moveList.size());
 
 			if (max) {
 				int i = 0;
@@ -107,7 +110,7 @@ public class CheckersAINode
 						int from = Integer.parseInt(str[j]);
 						int to = Integer.parseInt(str[j + 1]);
 						// could make it throw an exception if the returned int is 0
-						tempb.makeMove(from, to, j);
+						tempb.makeMove(from, to);
 					}
 
 					int v = minmax(tempb, false, currHeight + 1, null, alpha, beta);
@@ -116,13 +119,16 @@ public class CheckersAINode
 						if (mv.val < tmv.val) {
 							mv = tmv;
 							bestNextMove = tmv.moves;
+							System.out.println("move = " + moveList.get(i));
+							System.out.println("value of this move is " + v);
 						}
 
 					}
+
 					if (v > alpha) {
-						System.out.println("alpha = " + v);
+						//System.out.println("alpha = " + v);
 						alpha = v;
-						System.out.println(moveList.get(i));
+						//System.out.println(moveList.get(i));
 						// mv.val = v;
 						//bestNextMove = moveList.get(i);
 					}
@@ -136,19 +142,21 @@ public class CheckersAINode
 					// make move on tempb
 					// mv.moves = move; might not be the way to go
 					CheckersOp tempb = new CheckersOp(board);
-
 					String[] str = moveList.get(i).split(",");
+//					if(tempb.hasJump(Integer.parseInt(str[0]))){
+//						System.out.println("Black has this jump move " + moveList.get(i));
+//					}
 					for (int j = 0; j < str.length - 1; j++) {
 						int from = Integer.parseInt(str[j]);
 						int to = Integer.parseInt(str[j + 1]);
 						// could make it throw an exception if the returned int is 0
-						tempb.makeMove(from, to, j);
+						tempb.makeMove(from, to);
 					}
 					int v = minmax(tempb, true, currHeight + 1, null, alpha, beta);
 					if (v < beta) {
-						System.out.println(moveList.get(i));
+						//System.out.println(moveList.get(i));
 						beta = v;
-						System.out.println("beta = " + v);
+						//System.out.println("beta = " + v);
 						// mv.val = v;
 						//bestNextMove = moveList.get(i);
 					}
@@ -158,8 +166,7 @@ public class CheckersAINode
 				return beta;
 			}
 		}
-		if (max) return alpha;
-		else return beta;
+		return board.evaluateBoard();
 	}
 
 	public void buildTree(int currheight){
@@ -196,12 +203,12 @@ public class CheckersAINode
 		System.out.println("Time in sec is: " + (System.currentTimeMillis() - start) / 1000);
 		stop = false;
 		leafHeight = 0;
-		System.out.println("LeafHeight is now " + leafHeight);
+		//System.out.println("LeafHeight is now " + leafHeight);
 
 	}
 
 	// THE MOVE GENERATOR !!!!!!!
-	public ArrayList<String> moveGen(boolean max, CheckersOp board){
+	private ArrayList<String> moveGen(boolean max, CheckersOp board){
 		ArrayList<String > moves = new ArrayList<String>();
 		// who the player is can be based on the max bool
 		// Generate some moves based on the player and the board
@@ -212,13 +219,17 @@ public class CheckersAINode
 			for (int i = 0; i < 8; i++){
 				for (int j = 0; j < 8; j++){
 					if (board.getBoard()[i][j] % 2 == 1){
-						addValidSquareJumpMovesForRed(i,j,"", board);
+						addValidSquareJumpMovesForRed(i,j,"", board,2);
 					}
 				}
 			}
+			if (genMoves.size() >= 2){
+				genMoves.sort(comparator);
+			}
+
 			// ONLY ADD THE SQUARE MOVES IF NO JUMP MOVES ARE AVAILABLE!!!
 			if(genMoves.size() == 0){
-				System.out.println("hej from Square moveGen for red piece");
+				//System.out.println("hej from Square moveGen for red piece");
 				for (int i = 0; i < 8; i++){
 					for (int j = 0; j < 8; j++){
 						if (board.getBoard()[i][j] % 2 == 1){
@@ -235,9 +246,12 @@ public class CheckersAINode
 				for (int j = 0; j < 8; j++){
 					int piece = board.getBoard()[i][j];
 					if (piece % 2 == 0 && piece != 0){
-						addValidSquareJumpMovesForBlack(i,j,"", board);
+						addValidSquareJumpMovesForBlack(i,j,"", board, 2);
 					}
 				}
+			}
+			if (genMoves.size() >= 2){
+				genMoves.sort(comparator);
 			}
 			if(genMoves.size() == 0){
 				for (int i = 0; i < 8; i++){
@@ -303,7 +317,7 @@ public class CheckersAINode
 		}
 	}
 
-	public void addValidSquareJumpMovesForRed(int row, int col, String temp, CheckersOp tboard)
+	public void addValidSquareJumpMovesForRed(int row, int col, String temp, CheckersOp tboard, int movetype)
 	{
 		int index = 10*row+col;
 		temp += index + ",";
@@ -312,6 +326,12 @@ public class CheckersAINode
 		//These are helper methods: find the possible moves for any given square
 		if(tboard.getBoard()[row][col]==1)//If we found a normal red piece
 		{
+			if((movetype == 420 && temp.length() > 3) || (movetype == 0 && temp.length() > 3) ){
+				temp = temp.substring(0,temp.length()-1);
+				genMoves.add(temp);
+				return;
+			}
+
 			if(temp.length() > 3){ //If temp has more than 1 coordinate
 				if(!(tboard.checkValidMove(10*row+col,10*(row+2)+col-2)==2) && !(tboard.checkValidMove(10*row+col,10*(row+2)+col+2)==2)){
 					temp = temp.substring(0,temp.length()-1);
@@ -328,12 +348,7 @@ public class CheckersAINode
 				int to = (10*(row+2)+col-2);
 				int from = row*10 + col;
 				int movety = tempBoard.makeMove(from, to);
-				if(movety == 1 || movety == 0){
-					temp = temp.substring(0,temp.length()-1);
-					genMoves.add(temp);
-					return;
-				}
-				addValidSquareJumpMovesForRed((row+2), col-2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row+2), col-2, temp, tempBoard, movety);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row+2)+col+2)==2) //Jumping down-right
@@ -342,16 +357,18 @@ public class CheckersAINode
 				int to = (10*(row+2)+col+2);
 				int from = row*10 + col;
 				int movety = tempBoard.makeMove(from, to);
-				if(movety == 1 || movety == 0){
-					temp = temp.substring(0,temp.length()-1);
-					genMoves.add(temp);
-					return;
-				}
-				addValidSquareJumpMovesForRed((row+2), col+2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row+2), col+2, temp, tempBoard, movety);
 			}
 		}
 		else if(tboard.getBoard()[row][col]==3) //This means we found a red king!
 		{
+
+//			if((movetype == 420 && temp.length() > 3) || (movetype == 0 && temp.length() > 3) ){
+//				temp = temp.substring(0,temp.length()-1);
+//				genMoves.add(temp);
+//				return;
+//			}
+
 			if(temp.length() > 3){ //If temp has more than 1 coordinate
 				if(!(tboard.checkValidMove(10*row+col,10*(row+2)+col-2)==2) && !(tboard.checkValidMove(10*row+col,10*(row+2)+col+2)==2) &&
 						!(tboard.checkValidMove(10*row+col,10*(row-2)+col-2)==2) && !(tboard.checkValidMove(10*row+col,10*(row-2)+col+2)==2)){
@@ -367,12 +384,7 @@ public class CheckersAINode
 				int to = (10*(row+2)+col-2);
 				int from = row*10 + col;
 				int movety = tempBoard.makeMove(from, to);
-				if(movety == 1 || movety == 0){
-					temp = temp.substring(0,temp.length()-1);
-					genMoves.add(temp);
-					return;
-				}
-				addValidSquareJumpMovesForRed((row+2), col-2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row+2), col-2, temp, tempBoard, movety);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row+2)+col+2)==2) //Jumping down-right
@@ -381,12 +393,7 @@ public class CheckersAINode
 				int to = (10*(row+2)+col+2);
 				int from = row*10 + col;
 				int movety = tempBoard.makeMove(from, to);
-				if(movety == 1 || movety == 0){
-					temp = temp.substring(0,temp.length()-1);
-					genMoves.add(temp);
-					return;
-				}
-				addValidSquareJumpMovesForRed((row+2), col+2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row+2), col+2, temp, tempBoard, movety);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row-2)+col-2)==2) //Jumping up-left
@@ -395,12 +402,7 @@ public class CheckersAINode
 				int to = (10*(row-2)+col-2);
 				int from = row*10 + col;
 				int movety = tempBoard.makeMove(from, to);
-				if(movety == 1 || movety == 0){
-					temp = temp.substring(0,temp.length()-1);
-					genMoves.add(temp);
-					return;
-				}
-				addValidSquareJumpMovesForRed((row-2), col-2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row-2), col-2, temp, tempBoard, movety);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row-2)+col+2)==2) //Jumping up-right
@@ -409,12 +411,7 @@ public class CheckersAINode
 				int to = (10*(row-2)+col+2);
 				int from = row*10 + col;
 				int movety = tempBoard.makeMove(from, to);
-				if(movety == 1 || movety == 0){
-					temp = temp.substring(0,temp.length()-1);
-					genMoves.add(temp);
-					return;
-				}
-				addValidSquareJumpMovesForRed((row-2), col+2, temp, tempBoard);
+				addValidSquareJumpMovesForRed((row-2), col+2, temp, tempBoard, movety);
 			}
 		}
 	}
@@ -465,7 +462,7 @@ public class CheckersAINode
 		}
 	}
 
-	public void addValidSquareJumpMovesForBlack(int row, int col, String temp, CheckersOp tboard)
+	public void addValidSquareJumpMovesForBlack(int row, int col, String temp, CheckersOp tboard, int movetype)
 	{
 		int index = 10*row+col;
 		temp += index + ",";
@@ -474,6 +471,12 @@ public class CheckersAINode
 		//These are helper methods: find the possible moves for any given square
 		if(tboard.getBoard()[row][col]==2)//If we found a normal black piece
 		{
+			if((movetype == 420 && temp.length() > 3) || (movetype == 0 && temp.length() > 3) ){
+				temp = temp.substring(0,temp.length()-1);
+				genMoves.add(temp);
+				return;
+			}
+
 			if(temp.length() > 3){ //If temp has more than 1 coordinate
 				if(!(tboard.checkValidMove(10*row+col,10*(row-2)+col-2)==2) && !(tboard.checkValidMove(10*row+col,10*(row-2)+col+2)==2)){
 					temp = temp.substring(0,temp.length()-1);
@@ -490,12 +493,7 @@ public class CheckersAINode
 				int to = (10*(row-2)+col-2);
 				int from = row*10 + col;
 				int movety = tempBoard.makeMove(from, to);
-				if(movety == 1 || movety == 0){
-					temp = temp.substring(0,temp.length()-1);
-					genMoves.add(temp);
-					return;
-				}
-				addValidSquareJumpMovesForRed((row-2), col-2, temp, tempBoard);
+				addValidSquareJumpMovesForBlack((row-2), col-2, temp, tempBoard, movety);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row-2)+col+2)==2) //Jumping down-right
@@ -504,16 +502,18 @@ public class CheckersAINode
 				int to = (10*(row-2)+col+2);
 				int from = row*10 + col;
 				int movety = tempBoard.makeMove(from, to);
-				if(movety == 1 || movety == 0){
-					temp = temp.substring(0,temp.length()-1);
-					genMoves.add(temp);
-					return;
-				}
-				addValidSquareJumpMovesForRed((row-2), col+2, temp, tempBoard);
+				addValidSquareJumpMovesForBlack((row-2), col+2, temp, tempBoard, movety);
 			}
 		}
 		else if(tboard.getBoard()[row][col]==4) //This means we found a black king!
 		{
+
+//			if((movetype == 420 && temp.length() > 3) || (movetype == 0 && temp.length() > 3) ){
+//				temp = temp.substring(0,temp.length()-1);
+//				genMoves.add(temp);
+//				return;
+//			}
+
 			if(temp.length() > 3){ //If temp has more than 1 coordinate
 				if(!(tboard.checkValidMove(10*row+col,10*(row+2)+col-2)==2) && !(tboard.checkValidMove(10*row+col,10*(row+2)+col+2)==2) &&
 						!(tboard.checkValidMove(10*row+col,10*(row-2)+col-2)==2) && !(tboard.checkValidMove(10*row+col,10*(row-2)+col+2)==2)){
@@ -529,12 +529,7 @@ public class CheckersAINode
 				int to = (10*(row+2)+col-2);
 				int from = row*10 + col;
 				int movety = tempBoard.makeMove(from, to);
-				if(movety == 1 || movety == 0){
-					temp = temp.substring(0,temp.length()-1);
-					genMoves.add(temp);
-					return;
-				}
-				addValidSquareJumpMovesForRed((row+2), col-2, temp, tempBoard);
+				addValidSquareJumpMovesForBlack((row+2), col-2, temp, tempBoard, movety);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row+2)+col+2)==2) //Jumping down-right
@@ -543,12 +538,7 @@ public class CheckersAINode
 				int to = (10*(row+2)+col+2);
 				int from = row*10 + col;
 				int movety = tempBoard.makeMove(from, to);
-				if(movety == 1 || movety == 0){
-					temp = temp.substring(0,temp.length()-1);
-					genMoves.add(temp);
-					return;
-				}
-				addValidSquareJumpMovesForRed((row+2), col+2, temp, tempBoard);
+				addValidSquareJumpMovesForBlack((row+2), col+2, temp, tempBoard, movety);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row-2)+col-2)==2) //Jumping up-left
@@ -557,12 +547,7 @@ public class CheckersAINode
 				int to = (10*(row-2)+col-2);
 				int from = row*10 + col;
 				int movety = tempBoard.makeMove(from, to);
-				if(movety == 1 || movety == 0){
-					temp = temp.substring(0,temp.length()-1);
-					genMoves.add(temp);
-					return;
-				}
-				addValidSquareJumpMovesForRed((row-2), col-2, temp, tempBoard);
+				addValidSquareJumpMovesForBlack((row-2), col-2, temp, tempBoard, movety);
 			}
 
 			if(tboard.checkValidMove(10*row+col,10*(row-2)+col+2)==2) //Jumping up-right
@@ -571,12 +556,7 @@ public class CheckersAINode
 				int to = (10*(row-2)+col+2);
 				int from = row*10 + col;
 				int movety = tempBoard.makeMove(from, to);
-				if(movety == 1 || movety == 0){
-					temp = temp.substring(0,temp.length()-1);
-					genMoves.add(temp);
-					return;
-				}
-				addValidSquareJumpMovesForRed((row-2), col+2, temp, tempBoard);
+				addValidSquareJumpMovesForBlack((row-2), col+2, temp, tempBoard, movety);
 			}
 		}
 	}

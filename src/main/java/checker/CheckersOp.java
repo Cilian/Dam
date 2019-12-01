@@ -170,10 +170,20 @@ public class CheckersOp {
 			}
 		}
 		//Check to see if a King was born
-		if(toY == 0 || toY == 7){
-			if(pieceType == 1) board[toY][toX] = 3;
-			if(pieceType == 2) board[toY][toX] = 4;
-			moveType = 1;
+		if((toY == 0  && pieceType == 2)|| (toY == 7 && pieceType == 1)){
+			if(pieceType == 1) {
+				board[toY][toX] = 3;
+				switchTurn();
+				turnCount++;
+				return 420;
+			}
+			if(pieceType == 2) {
+				board[toY][toX] = 4;
+				switchTurn();
+				turnCount++;
+				return 420;
+			}
+
 		}
 		turnCount++;
 		if(currJumper != -1) currJumper = -1;
@@ -184,82 +194,90 @@ public class CheckersOp {
 		return moveType;
 	}
 
-	public int makeMove(int from, int to, int start){
-		// example of this is 25 / 10 = 2.5 but since it is int is floored to 2
-		// example of this is 25 % 10 removes all multiples of 10,
-		// so it basicly removes 10 and keeps doing it as long as the remainder is higher than 10
-		if(start == 0){
-			prevBoard = new int[8][8];
-			for (int i = 0; i < board.length; i++) {
-				System.arraycopy(board[i], 0, prevBoard[i], 0, board[i].length);
-			}
-			prevbCount = bCount;
-			prevrCount = rCount;
-			prevturn = turn;
-			prevturnCount = turnCount;
-		}
-		int fromY = from / 10;
-		int fromX = from % 10;
-		int toY = to / 10;
-		int toX = to % 10;
-
-
-		int moveType; //stores whether it is a move, jump or invalid
-
-		int pieceType = board[fromY][fromX]; //finds the type of piece at the from position
-
-		if(pieceType == 0) return 0; //if you are moving from a blank face, return false
-
-		if(pieceType %2 != turn) return 0;//it is not the person's turn
-
-		moveType = checkValidMove(from, to);
-
-		if(moveType == 0) return 0;
-
-		//now move the piece accordingly. moveType is 1 if it is a normal move or 2 if it is a jump
-
-		if(currJumper != -1)
-		{
-			if(from != currJumper) return 0;
-			if(moveType != 2) return 0;
-
-		}
-		board[toY][toX] = board[fromY][fromX];
-		board[fromY][fromX] = 0;
-
-		if(moveType == 2){
-
-			int y = (toY - fromY)/2;
-			int x = (toX - fromX)/2;
-			int middle = board[fromY + y][fromX + x];
-			if(pieceType == 2 || pieceType == 4){
-				if(middle == 1 || middle == 3){
-					board[fromY + y][fromX + x] = 0;
-					rCount--;
-				}else return 0;
-			}
-
-			if(pieceType == 1 || pieceType == 3){
-				if(middle == 2 || middle == 4){
-					board[fromY + y][fromX + x] = 0;
-					bCount--;
-				}else return 0;
-			}
-		}
-		//Check to see if a King was born
-		if(toY == 0 || toY == 7){
-			if(pieceType == 1) board[toY][toX] = 3;
-			if(pieceType == 2) board[toY][toX] = 4;
-			moveType = 1;
-		}
-		turnCount++;
-		if(currJumper != -1) currJumper = -1;
-		boolean testHasJump = hasJump(to);
-		if(moveType == 2 && testHasJump) currJumper = to;
-		else switchTurn();
-
-		return moveType;
-	}
+//	public int makeMove(int from, int to, int start){
+//		// example of this is 25 / 10 = 2.5 but since it is int is floored to 2
+//		// example of this is 25 % 10 removes all multiples of 10,
+//		// so it basicly removes 10 and keeps doing it as long as the remainder is higher than 10
+//		if(start == 0){
+//			prevBoard = new int[8][8];
+//			for (int i = 0; i < board.length; i++) {
+//				System.arraycopy(board[i], 0, prevBoard[i], 0, board[i].length);
+//			}
+//			prevbCount = bCount;
+//			prevrCount = rCount;
+//			prevturn = turn;
+//			prevturnCount = turnCount;
+//		}
+//		int fromY = from / 10;
+//		int fromX = from % 10;
+//		int toY = to / 10;
+//		int toX = to % 10;
+//
+//
+//		int moveType; //stores whether it is a move, jump or invalid
+//
+//		int pieceType = board[fromY][fromX]; //finds the type of piece at the from position
+//
+//		if(pieceType == 0) return 0; //if you are moving from a blank face, return false
+//
+//		if(pieceType %2 != turn) return 0;//it is not the person's turn
+//
+//		moveType = checkValidMove(from, to);
+//
+//		if(moveType == 0) return 0;
+//
+//		//now move the piece accordingly. moveType is 1 if it is a normal move or 2 if it is a jump
+//
+//		if(currJumper != -1)
+//		{
+//			if(from != currJumper) return 0;
+//			if(moveType != 2) return 0;
+//
+//		}
+//		board[toY][toX] = board[fromY][fromX];
+//		board[fromY][fromX] = 0;
+//
+//		if(moveType == 2){
+//
+//			int y = (toY - fromY)/2;
+//			int x = (toX - fromX)/2;
+//			int middle = board[fromY + y][fromX + x];
+//			if(pieceType == 2 || pieceType == 4){
+//				if(middle == 1 || middle == 3){
+//					board[fromY + y][fromX + x] = 0;
+//					rCount--;
+//				}else return 0;
+//			}
+//
+//			if(pieceType == 1 || pieceType == 3){
+//				if(middle == 2 || middle == 4){
+//					board[fromY + y][fromX + x] = 0;
+//					bCount--;
+//				}else return 0;
+//			}
+//		}
+//		//Check to see if a King was born
+//		if(toY == 0 || toY == 7){
+//			if(pieceType == 1) {
+//				board[toY][toX] = 3;
+//				switchTurn();
+//				return 420;
+//			}
+//			if(pieceType == 2) {
+//				board[toY][toX] = 4;
+//				switchTurn();
+//				return 420;
+//			}
+//
+//		}
+//		turnCount++;
+//		if(currJumper != -1) currJumper = -1;
+//		boolean testHasJump = hasJump(to);
+//		if(moveType == 2 && testHasJump) currJumper = to;
+//		else switchTurn();
+//
+//		return moveType;
+//	}
 
 	public boolean isRedTurn(){
 		return turn == 1;
@@ -466,10 +484,18 @@ public class CheckersOp {
 		//First we check to make sure there's at least one black and red piece on the board
 		//Wait we can use rCount and bCount, silly Eric
 		
-		if(rCount==0) //No more computer pieces; minimum (worst for AI) possible outcome
-			return Integer.MIN_VALUE;
-		if(bCount==0) //No more human pieces; maximum (best for AI) possible outcome
+//		if(rCount==0) //No more computer pieces; minimum (worst for AI) possible outcome
+//			return Integer.MIN_VALUE;
+//		if(bCount==0) //No more human pieces; maximum (best for AI) possible outcome
+//			return Integer.MAX_VALUE;
+		//if Red (com) wins return high val
+		if(this.checkWinner() == 1){
 			return Integer.MAX_VALUE;
+		}
+		//if Black (player) win return low val
+		else if(this.checkWinner() == 2){
+			return Integer.MIN_VALUE;
+		}
 		
 		int sum = 0;
 		//Edge pieces are worth more, center pieces are worth less
@@ -477,14 +503,14 @@ public class CheckersOp {
 		//But kings are worth a constant value (you want them moving around)
 		
 		int[][] sumBoard = 
-			   {{0, 12, 0, 12, 0, 12, 0, 12},   
-				{12, 0, 10, 0, 10, 0, 10, 0},
-				{0, 10, 0, 8, 0, 8, 0, 12},
-				{12, 0, 8, 0, 7, 0, 10, 0},
-				{0, 10, 0, 7, 0, 8, 0, 12},
-				{12, 0, 8, 0, 8, 0, 10, 0},
-				{0, 10, 0, 10, 0, 10, 0, 12},
-				{12, 0, 12, 0, 12, 0, 12, 0}};
+			   {{0, 7, 0, 7, 0, 7, 0, 7},
+				{6, 0, 5, 0, 5, 0, 5, 0},
+				{0, 5, 0, 5, 0, 5, 0, 6},
+				{6, 0, 5, 0, 5, 0, 5, 0},
+				{0, 5, 0, 5, 0, 5, 0, 6},
+				{6, 0, 5, 0, 5, 0, 5, 0},
+				{0, 5, 0, 5, 0, 5, 0, 6},
+				{7, 0, 7, 0, 7, 0, 7, 0}};
 
 
 		// note: Dette skal vi selv lave
@@ -496,9 +522,9 @@ public class CheckersOp {
 				}else if(pieceType ==2){
 					sum -= sumBoard[x][y] * 1;
 				}else if(pieceType == 3){
-					sum += 30;
+					sum += 20;
 				}else if(pieceType == 4){
-					sum -= 30;
+					sum -= 20;
 				}
 			}
 		}
