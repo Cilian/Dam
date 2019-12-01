@@ -11,15 +11,15 @@ public class CheckersAITree
 		root = new CheckersAINode(inputBoard, null, 11);
 	}
 	
-	public void buildTree()
+/*	public void buildTree()
 	{
-		root.buildTree(11);
-	}
+		root.buildTree(true);
+	}*/
 	
 	public String findBestMove() //Returns the sequence of best moves
 	{
 		System.out.println("The AI is thinking . . .");
-		root.buildTree(0);
+		root.buildTree(11);
 		System.out.println(root.bestNextMove);
 		return root.bestNextMove;
 	}

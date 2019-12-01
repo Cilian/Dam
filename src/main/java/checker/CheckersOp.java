@@ -512,8 +512,7 @@ public class CheckersOp {
 				{0, 5, 0, 5, 0, 5, 0, 6},
 				{7, 0, 7, 0, 7, 0, 7, 0}};
 
-
-		// note: Dette skal vi selv lave
+		//Remember to change depending on which color the computer is
 		for(int y = 0;y < 8; y++){
 			for(int x = 0; x < 8; x++){
 				int pieceType = board[x][y];

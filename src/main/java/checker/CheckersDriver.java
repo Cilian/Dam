@@ -15,29 +15,29 @@ public class CheckersDriver extends JFrame implements ActionListener
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
-		JButton onePlayer = new JButton("One Player Game");
+		JButton onePlayer = new JButton("Play as black");
 		add(onePlayer);
 		onePlayer.addActionListener(this);
 		onePlayer.setVisible(true);
-		onePlayer.setActionCommand("One Player Game");
+		onePlayer.setActionCommand("Play as black");
 		
-		JButton twoPlayer = new JButton("Two Player Game");
+		JButton twoPlayer = new JButton("Play as red");
 		add(twoPlayer);
 		twoPlayer.addActionListener(this);
 		twoPlayer.setVisible(true);
-		twoPlayer.setActionCommand("Two Player Game");
+		twoPlayer.setActionCommand("Play as red");
 	}
 	
 	public void actionPerformed(ActionEvent evt)
 	{
-		if(evt.getActionCommand().equals("One Player Game"))
+		if(evt.getActionCommand().equals("Play as black"))
 		{
-			CheckersGUIPruning game = new CheckersGUIPruning("Human vs. Computer", false);
+			CheckersGUIPruning game = new CheckersGUIPruning("Human vs. Computer", true);
 			game.setVisible(true);
 		}
-		else if(evt.getActionCommand().equals("Two Player Game"))
+		else if(evt.getActionCommand().equals("Play as red"))
 		{
-			CheckersGUIPruning game = new CheckersGUIPruning("Human vs. Human", true);
+			CheckersGUIPruning game = new CheckersGUIPruning("Human vs. Human", false);
 			game.setVisible(true);
 		}
 		this.setVisible(false);

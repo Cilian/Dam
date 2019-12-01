@@ -15,12 +15,12 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 	private int prevClicked; //This will be useful in the ActionListener, when you need to remember what was previously clicked.
 	//prevClicked stores data in the form: first digit = row, second digit = column
 	private CheckersOp data;
-	private boolean isTwoHumans; //This decides whether it's a human v. human or human v. computer match. (Could've made two classes, but this was simpler).
+	private boolean isStarting; //This decides whether it's a human v. human or human v. computer match. (Could've made two classes, but this was simpler).
 	private boolean gameOver;
 	public int f;
 	public int k;
 	
-	public CheckersGUIPruning(String title, boolean hasTwoHumans)
+	public CheckersGUIPruning(String title, boolean playerStart)
 	{
 		super(title);
 
@@ -50,7 +50,7 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 		
 		data = new CheckersOp();
 		data.resetBoard();
-		isTwoHumans = hasTwoHumans;
+		isStarting = playerStart;
 		drawBoard();
 
 	}
@@ -66,25 +66,40 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 				{
 					buttons[row][column].setText("");
 				}
-				if(board[row][column]==1)
-				{
-					buttons[row][column].setForeground(Color.RED);
-					buttons[row][column].setText("O");
-				}
-				if(board[row][column]==2)
-				{
-					buttons[row][column].setForeground(Color.BLACK);
-					buttons[row][column].setText("O");
-				}
-				if(board[row][column]==3)
-				{
-					buttons[row][column].setForeground(Color.RED);
-					buttons[row][column].setText("K");
-				}
-				if(board[row][column]==4)
-				{
-					buttons[row][column].setForeground(Color.BLACK);
-					buttons[row][column].setText("K");
+				if(isStarting) {
+					if(board[row][column]==1) {
+						buttons[row][column].setForeground(Color.RED);
+						buttons[row][column].setText("O");
+					}
+					if(board[row][column]==2) {
+						buttons[row][column].setForeground(Color.BLACK);
+						buttons[row][column].setText("O");
+					}
+					if(board[row][column]==3) {
+						buttons[row][column].setForeground(Color.RED);
+						buttons[row][column].setText("K");
+					}
+					if(board[row][column]==4) {
+						buttons[row][column].setForeground(Color.BLACK);
+						buttons[row][column].setText("K");
+					}
+				} else {
+					if (board[row][column] == 1) {
+						buttons[row][column].setForeground(Color.BLACK);
+						buttons[row][column].setText("O");
+					}
+					if (board[row][column] == 2) {
+						buttons[row][column].setForeground(Color.RED);
+						buttons[row][column].setText("O");
+					}
+					if (board[row][column] == 3) {
+						buttons[row][column].setForeground(Color.BLACK);
+						buttons[row][column].setText("K");
+					}
+					if (board[row][column] == 4) {
+						buttons[row][column].setForeground(Color.RED);
+						buttons[row][column].setText("K");
+					}
 				}
 			}
 		}
@@ -96,72 +111,80 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 		if(gameOver) //This locks up the screen.
 			return;
 		//Note: the winner check still needs some refining in here
-		int currClick = Integer.parseInt(evt.getActionCommand());
+		int currClick = 0;
 		k = 1;
 		f = 0;
 		if(data.hasJump(currClick) && f == 0){
 			k = 0;
 			f++;
 		}
-		int didWork = data.makeMove(prevClicked, currClick);
-		if(didWork!=0)
-		{
-			System.out.println("Human has moved.");
-			drawBoard();
-//			if (didWork == 1){
-//				data.setRedTurn();
-//			}
+
 			int winner = data.checkWinner();
 			
-			if(isTwoHumans==true)
-			{
-					if(winner==2)
-					{
-						System.out.println("The Black Player has triumphed! Congratulations, and major props.");
-						gameOver = true;
-						return;
-					}
-
-
-					if(winner==1)
-					{
-						System.out.println("The Red Player has triumphed! Way to go!");
-						gameOver = true;
-						return;
-					}
-
-			}
-			
-			if(isTwoHumans==false) //Now it's the computer's move
-			{
-				if(winner==2) //Check for a human win
-				{
-					System.out.println("You beat the computer! Congratulations!");
-					gameOver = true;
-					return;
+			if(isStarting) {
+				currClick = Integer.parseInt(evt.getActionCommand());
+				int didWork = data.makeMove(prevClicked, currClick);
+				if(didWork!=0) {
+					System.out.println("Human has moved.");
+					drawBoard();
 				}
-				
-				if(data.isRedTurn()) //This means it's the computer's turn
-				{
+
+				if(data.isRedTurn()){ //This means it's the computer's turn
 					//Here we feed our wonderful AI the board, and ask it to make as many moves as needed
 					//We know it must have at least one move, since we just used checkWinner() and found no winner
 					//Then we'll have a while loop in here, too: while(data.currJumper!=null), keep playing
 					//And finally at the end of the jump chain or at the end of the single move, the turns will have flipped within data
 					//, the actionListener will be done
 					//And control will pass back to the player.
-										
-	
+
+
 					long startMillis = System.currentTimeMillis();
-					f = 0;
 					CheckersAITree thinker = new CheckersAITree(data); //CheckersAITree will clone it for us
 					String bestMoves = thinker.findBestMove(); //We ask our AI Tree what the best move is
-                    System.out.println(bestMoves);
+					System.out.println(bestMoves);
 					String[] arrMoves = bestMoves.split(","); //Divides up the string of moves by comma
 					System.out.println("The AI moved: " + bestMoves);
-					for(int i=0; i<arrMoves.length-1; i++)
-					{
+					for(int i=0; i<arrMoves.length-1; i++){
 						data.makeMove(Integer.parseInt(arrMoves[i]),Integer.parseInt(arrMoves[i+1]));
 					}
+					drawBoard();
+					long endMillis = System.currentTimeMillis();
+					System.out.println("The AI took " + (endMillis-startMillis) + " milliseconds to find this move.");
+
+					winner = data.checkWinner(); //After the computer move, we check for a Red win
+					if(winner==1)
+					{
+						System.out.println("The Computer has Triumphed. RIP.");
+						gameOver = true;
+					}
+				}
+			}
+
+		if(!isStarting){ //Now it's the computer's move
+			if(winner==2){ //Check for a human win
+				System.out.println("You beat the computer! Congratulations!");
+				gameOver = true;
+				return;
+			}
+
+			if(data.isRedTurn()){ //This means it's the computer's turn
+				//Here we feed our wonderful AI the board, and ask it to make as many moves as needed
+				//We know it must have at least one move, since we just used checkWinner() and found no winner
+				//Then we'll have a while loop in here, too: while(data.currJumper!=null), keep playing
+				//And finally at the end of the jump chain or at the end of the single move, the turns will have flipped within data
+				//, the actionListener will be done
+				//And control will pass back to the player.
+
+
+				long startMillis = System.currentTimeMillis();
+				CheckersAITree thinker = new CheckersAITree(data); //CheckersAITree will clone it for us
+				String bestMoves = thinker.findBestMove(); //We ask our AI Tree what the best move is
+				System.out.println(bestMoves);
+				String[] arrMoves = bestMoves.split(","); //Divides up the string of moves by comma
+				System.out.println("The AI moved: " + bestMoves);
+				for(int i=0; i<arrMoves.length-1; i++){
+					data.makeMove(Integer.parseInt(arrMoves[i]),Integer.parseInt(arrMoves[i+1]));
+				}
 					drawBoard();
 					long endMillis = System.currentTimeMillis();
 					System.out.println("The AI took " + (endMillis-startMillis) + " milliseconds to find this move.");
@@ -172,9 +195,14 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 						System.out.println("The Computer has Triumphed. RIP.");
 						gameOver = true;
 					}
-				}
 			}
-			
+
+			currClick = Integer.parseInt(evt.getActionCommand());
+			int didWork = data.makeMove(prevClicked, currClick);
+			if(didWork!=0) {
+				System.out.println("Human has moved.");
+				drawBoard();
+			}
 		}
 		prevClicked = currClick; //You'll notice that the old player's last square will get stored as the next player's prevClicked, but
 		//but this is okay, because there will never be a legal move whose prevClick is a square with the opponent's piece
@@ -184,7 +212,7 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 	private String returnTitleString(int turnCount)
 	{
 		String titleString = "";
-		if(isTwoHumans) titleString += "Human vs. Human";
+		if(isStarting) titleString += "Human vs. Human";
 		else titleString += "Human vs. Computer";
 		titleString += ", ";
 		if(data.isRedTurn()) titleString += "Red's Turn";
