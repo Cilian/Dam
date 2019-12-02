@@ -53,6 +53,9 @@ public class CheckersGUIPruning extends JFrame implements ActionListener
 		isStarting = playerStart;
 		drawBoard();
 
+		if(playerStart == false){
+			data.turn=1;
+		}
 	}
 	
 	public void drawBoard() //Takes the board info and redraws the board; will run after every move
