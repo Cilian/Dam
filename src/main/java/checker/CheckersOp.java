@@ -10,6 +10,7 @@ public class CheckersOp {
 	// 5 - Rogue Piece
 
 	private int[][] board;
+	private int[][] board2;
 	public int rCount;
 	public int bCount;
 	public int turnCount; //Just a counter -- NOT whose turn it is
@@ -46,9 +47,9 @@ public class CheckersOp {
 				
 
 		//Remember to change this later! This was just for testing the endgame:
-		/*
-		board = new int[][] 
-				{{0, 1, 0, 0, 0, 2, 0, 0},   
+
+		board2 = new int[][]
+				{{0, 1, 0, 0, 0, 2, 0, 0},
 				{0, 0, 0, 0, 0, 0, 0, 0},
 				{0, 1, 0, 0, 0, 1, 0, 1},
 				{0, 0, 0, 0, 0, 0, 0, 0},
@@ -56,7 +57,7 @@ public class CheckersOp {
 				{2, 0, 2, 0, 2, 0, 2, 0},
 				{0, 2, 0, 2, 0, 2, 0, 2},
 				{2, 0, 2, 0, 2, 0, 2, 0}};
-				*/
+
 		
 
 		//Once again, just for testing the endgame (computer winning):
@@ -521,9 +522,9 @@ public class CheckersOp {
 				}else if(pieceType ==2){
 					sum -= sumBoard[x][y] * 1;
 				}else if(pieceType == 3){
-					sum += 20;
+					sum += 10;
 				}else if(pieceType == 4){
-					sum -= 20;
+					sum -= 10;
 				}
 			}
 		}
