@@ -504,27 +504,27 @@ public class CheckersOp {
 		//But kings are worth a constant value (you want them moving around)
 		
 		int[][] sumBoard = 
-			   {{0, 7, 0, 7, 0, 7, 0, 7},
-				{6, 0, 5, 0, 5, 0, 5, 0},
-				{0, 5, 0, 5, 0, 5, 0, 6},
-				{6, 0, 5, 0, 5, 0, 5, 0},
-				{0, 5, 0, 5, 0, 5, 0, 6},
-				{6, 0, 5, 0, 5, 0, 5, 0},
-				{0, 5, 0, 5, 0, 5, 0, 6},
-				{7, 0, 7, 0, 7, 0, 7, 0}};
+			   {{0, 12, 0, 12, 0, 12, 0, 12},
+				{11, 0, 10, 0, 10, 0, 10, 0},
+				{0, 10, 0, 10, 0, 10, 0, 11},
+				{11, 0, 10, 0, 10, 0, 10, 0},
+				{0, 10, 0, 10, 0, 10, 0, 11},
+				{11, 0, 10, 0, 10, 0, 10, 0},
+				{0, 10, 0, 10, 0, 10, 0, 11},
+				{12, 0, 12, 0, 12, 0, 12, 0}};
 
 		//Remember to change depending on which color the computer is
 		for(int y = 0;y < 8; y++){
 			for(int x = 0; x < 8; x++){
 				int pieceType = board[x][y];
 				if(pieceType == 1){
-					sum += sumBoard[x][y] * 1; //Value of the square that it's on
+					sum += sumBoard[x][y]; //Value of the square that it's on
 				}else if(pieceType ==2){
-					sum -= sumBoard[x][y] * 1;
+					sum -= sumBoard[x][y];
 				}else if(pieceType == 3){
-					sum += 10;
+					sum += 20;
 				}else if(pieceType == 4){
-					sum -= 10;
+					sum -= 20;
 				}
 			}
 		}

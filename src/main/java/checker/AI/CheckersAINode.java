@@ -26,6 +26,7 @@ public class CheckersAINode
 	public CheckersOp globalBoard;
 	public String bestMovePrevIteration;
 	public String firstSearchMv;
+	public int leafs;
 	private long start;
 	private boolean stop;
 	private long currMillis;
@@ -40,6 +41,7 @@ public class CheckersAINode
 		globalBoard = new CheckersOp(inputBoard);
 		ch = 0;
 		allmv = 0;
+		leafs = 0;
 		stop = false;
 		//String moves = moveSequence;
 		bestNextMove = null;
@@ -93,6 +95,7 @@ public class CheckersAINode
 			}
 
 			if (currHeight == leafHeight) {
+				leafs++;
 				return board.evaluateBoard();
 			}
 			allmv += moveList.size();
@@ -195,6 +198,8 @@ public class CheckersAINode
 			System.out.println("bestMovePrevIteration = " + bestMovePrevIteration);
 			System.out.println("ch = " + ch);
 			System.out.println("allmv = " + allmv);
+			System.out.println("leafs = " + leafs);
+			leafs = 0;
 			ch = 0;
 			allmv = 0;
 			++leafHeight;
